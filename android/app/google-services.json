@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "550386870495",
+    "project_id": "hkdo-c1b66",
+    "storage_bucket": "hkdo-c1b66.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:550386870495:android:2106febbd4ba538684216a",
+        "android_client_info": {
+          "package_name": "com.effect.dothithongminh"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB09SoeJVx7aMwtG5qHCGRwy1F-899QH2k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

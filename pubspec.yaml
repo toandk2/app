@@ -1,0 +1,129 @@
+name: hkd
+description: BSC ERP App.
+
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
+
+environment:
+  sdk: ">=3.0.6 <4.0.0"
+
+version: 1.1.2+8
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.3
+  device_info: ^2.0.2
+  # dio: ^4.0.0
+  firebase_messaging: ^14.4.0
+  flutter_local_notifications: ^9.9.1
+  flutter_screenutil: ^5.0.0+2
+  flutter_svg: ^1.1.5
+  fluttertoast: ^8.0.8
+  # giffy_dialog: ^1.8.0
+  http: 1.1.0
+  intl: ^0.17.0
+  lottie: ^1.1.0
+  package_info: ^2.0.2
+  path_provider: ^2.0.2
+  # pull_to_refresh: ^2.0.0
+  sqflite: ^2.0.0+3
+  url_launcher: ^6.0.9
+  webview_flutter: ^4.5.0
+  qr_code_scanner: ^1.0.1
+  flutter_easyloading: ^3.0.3
+  cached_network_image: ^3.1.0
+  material_design_icons_flutter: ^5.0.6295
+  simple_animations: ^5.0.2
+  qr_flutter: ^4.0.0
+  gap: ^3.0.1
+  material_dialogs: ^1.1.1
+  fluentui_icons: ^1.0.0
+  getwidget: ^3.0.1
+  flutter_colorful_tab: ^0.1.1
+  flutter_toggle_tab: ^1.1.7
+  # dropdown_button2: ^1.4.0
+  geolocator: ^9.0.1
+  # infinite_scroll_pagination: ^3.1.0
+  firebase_core: ^2.27.0
+  path: any
+  flutter_dotenv: ^5.1.0
+  file_picker: 5.3.1
+  image_gallery_saver: any
+  flutter_map: ^6.1.0
+  latlong2: ^0.9.1
+  number_paginator: ^0.4.1
+  rxdart: ^0.27.7
+  map_launcher: ^3.3.0
+  collection: ^1.18.0
+  image_picker: 1.0.8
+  # share_plus: ^7.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # The "flutter_lints" package below contains a set of recommended lints to
+  # encourage good coding practices. The lint set provided by the package is
+  # activated in the `analysis_options.yaml` file located at the root of your
+  # package. See that file for information about deactivating specific lint
+  # rules and activating additional ones.
+  flutter_lints: ^2.0.0
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  assets:
+    - assets/
+    - assets/json/roles.json
+    - assets/json/
+    - assets/icons/login/
+    - assets/icons/
+    - assets/icons/profile/
+    - assets/icons/drawer/
+    - assets/icons/register/
+    - assets/images/
+  fonts:
+    - family: sansvn
+      fonts:
+        - asset: fonts/sansvn/SansVN-DemiBold.ttf
+        - asset: fonts/sansvn/SansVN-Regular.ttf
+    - family: poppins
+      fonts:
+        - asset: fonts/poppins.ttf
+    - family: robotocondensed
+      fonts:
+        - asset: fonts/robotocondensed/RobotoCondensed-Bold.ttf
+        - asset: fonts/robotocondensed/RobotoCondensed-BoldItalic.ttf
+        - asset: fonts/robotocondensed/RobotoCondensed-Italic.ttf
+        - asset: fonts/robotocondensed/RobotoCondensed-Light.ttf
+        - asset: fonts/robotocondensed/RobotoCondensed-LightItalic.ttf
+        - asset: fonts/robotocondensed/RobotoCondensed-Regular.ttf
+    - family: roboto
+      fonts:
+        - asset: fonts/roboto/Roboto-Black.ttf
+        - asset: fonts/roboto/Roboto-BlackItalic.ttf
+        - asset: fonts/roboto/Roboto-Bold.ttf
+        - asset: fonts/roboto/Roboto-BoldItalic.ttf
+        - asset: fonts/roboto/Roboto-Italic.ttf
+        - asset: fonts/roboto/Roboto-Light.ttf
+        - asset: fonts/roboto/Roboto-LightItalic.ttf
+        - asset: fonts/roboto/Roboto-Medium.ttf
+        - asset: fonts/roboto/Roboto-MediumItalic.ttf
+        - asset: fonts/roboto/Roboto-Regular.ttf
+        - asset: fonts/roboto/Roboto-Thin.ttf
+        - asset: fonts/roboto/Roboto-ThinItalic.ttf
