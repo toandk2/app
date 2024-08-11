@@ -1724,17 +1724,20 @@ class User {
   String? lat;
   String? lon;
   String? adminName;
+  String? shopId;
 
-  User(
-      {this.userName,
-      this.name,
-      this.phone,
-      this.address,
-      this.quote,
-      this.linkImg,
-      this.lat,
-      this.lon,
-      this.adminName});
+  User({
+    this.userName,
+    this.name,
+    this.phone,
+    this.address,
+    this.quote,
+    this.linkImg,
+    this.lat,
+    this.lon,
+    this.adminName,
+    this.shopId,
+  });
 
   User.fromJson(Map<String, dynamic> json) {
     userName = json['user_name'];
@@ -1746,6 +1749,7 @@ class User {
     lat = json['lat'];
     lon = json['lon'];
     adminName = json['admin_name'];
+    shopId = json['shop_id'];
   }
 
   Map<String, String> toJson() {
@@ -1759,6 +1763,7 @@ class User {
     data['lat'] = lat ?? '';
     data['lon'] = lon ?? '';
     data['admin_name'] = adminName ?? '';
+    data['shop_id'] = shopId ?? '';
     return data;
   }
 }
@@ -2550,7 +2555,6 @@ class CartModel {
   static List<CartModel> fromListJson(Iterable list) {
     return list.map((data) => CartModel.fromJson(data)).toList();
   }
-
 }
 
 class FindShipper {

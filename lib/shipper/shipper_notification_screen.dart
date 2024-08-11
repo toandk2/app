@@ -46,7 +46,6 @@ class _ShipperNotificationScreenState extends State<ShipperNotificationScreen>
 
   Future<void> loadNotification() async {
     Map<String, String> body = {
-      "token": Configs.login?.token ?? '',
       "limit": "5000",
       "offset": "0",
     };
@@ -127,11 +126,11 @@ class _ShipperNotificationScreenState extends State<ShipperNotificationScreen>
           if (_status == 3)
             Expanded(
                 child: Lottie.asset(
-                  "assets/images/nodata.json",
-                  repeat: true,
-                  reverse: true,
-                  animate: true,
-                ))
+              "assets/images/nodata.json",
+              repeat: true,
+              reverse: true,
+              animate: true,
+            ))
         ],
       ),
     );

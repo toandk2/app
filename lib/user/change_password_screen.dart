@@ -32,16 +32,16 @@ class _ChangPasswordScreenState extends State<ChangPasswordScreen> {
     if (form?.validate() == true) {
       try {
         final result = await _netUtil.post(
-          'change_password',
-          {
-            'old_password': _currentPass,
-            'new_password': _newPass,
-          }, context
-        );
+            'change_password',
+            {
+              'old_password': _currentPass,
+              'new_password': _newPass,
+            },
+            context);
         if (result != null && result['success'] == 1) {
           Fluttertoast.showToast(msg: 'Đổi mật khẩu thành công!');
-          await _netUtil.login(
-              Configs.login?.userName ?? '', _newPass ?? "", Configs.userGroup, context);
+          await _netUtil.login(Configs.login?.userName ?? '', _newPass ?? "",
+              Configs.userGroup, context);
 
           if (mounted) {
             switch (Configs.userGroup) {
@@ -49,13 +49,13 @@ class _ChangPasswordScreenState extends State<ChangPasswordScreen> {
                 Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) {
                   return const ShipperPage();
-                }), (Route<dynamic> route) => false);
+                }), ModalRoute.withName('/home'));
                 break;
               default:
                 Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) {
                   return const ShopPage();
-                }), (Route<dynamic> route) => false);
+                }), ModalRoute.withName('/home'));
             }
           }
         } else {

@@ -119,7 +119,6 @@ class _ShopPageState extends State<ShopPage> with TickerProviderStateMixin {
   Future<List<Order>> _getOrders(int status) async {
     List<Order> localOrders = [];
     Map<String, String> body = {
-      "token": Configs.login?.token ?? '',
       "status": status.toString(),
     };
 

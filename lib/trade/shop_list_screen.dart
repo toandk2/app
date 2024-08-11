@@ -78,21 +78,21 @@ class _ShopListWidgetState extends State<ShopListWidget> {
           if (_firstLoad)
             Expanded(
                 child: Lottie.asset(
-                  "assets/images/loading.json",
-                  repeat: true,
-                  reverse: true,
-                  animate: true,
-                )),
+              "assets/images/loading.json",
+              repeat: true,
+              reverse: true,
+              animate: true,
+            )),
           if (!_firstLoad)
             Expanded(
                 flex: 2,
                 child: widget.shops.isEmpty
                     ? Lottie.asset(
-                      "assets/images/nodata.json",
-                      repeat: true,
-                      reverse: true,
-                      animate: true,
-                    )
+                        "assets/images/nodata.json",
+                        repeat: true,
+                        reverse: true,
+                        animate: true,
+                      )
                     : ListView.builder(
                         // shrinkWrap: true,
                         itemCount: widget.shops.length,
@@ -116,6 +116,8 @@ class _ShopListWidgetState extends State<ShopListWidget> {
                                 MaterialPageRoute(
                                   builder: (context) => ShopDetailScreen(
                                     shopId: shop.id ?? '',
+                                    isShopBuying:
+                                        widget.temporaryUserGroup == 1,
                                   ),
                                 ),
                               );

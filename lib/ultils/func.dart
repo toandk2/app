@@ -231,11 +231,34 @@ class NetworkUtil {
   NetworkUtil.internal();
   factory NetworkUtil() => _instance;
   final JsonDecoder _decoder = const JsonDecoder();
+
+  _handleResponse(res, BuildContext context) {
+    try {
+      final resBody = _decoder.convert(res);
+      if (resBody != null && resBody is Map && resBody['success'] == -1) {
+        Configs.login = null;
+        Configs.user = null;
+        final db = DatabaseHelper();
+        db.deleteUsers();
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) {
+          return const LoginScreen();
+        }), (route) => route is SearchScreen);
+        return;
+      }
+      return resBody;
+    } catch (e) {
+      return;
+    }
+  }
+
   Future<dynamic> get(
       String url, Map<String, String> par, BuildContext context) async {
-    final Map<String, String> headers = {
-      'Authorization': Configs.login?.token ?? '',
-    };
+    final Map<String, String> headers = {};
+    final token = Configs.login?.token;
+    if (token != null) {
+      headers['Authorization'] = token;
+    }
     String queryString = Uri(queryParameters: par).query;
     url += "?$queryString";
     url = Configs.BASE_URL + url;
@@ -253,15 +276,7 @@ class NetworkUtil {
           return null;
         }
         if (res.length > 4) {
-          final resBody = _decoder.convert(res);
-          if (resBody != null && resBody['success'] == -1) {
-            Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) {
-              return const LoginScreen();
-            }), (route) => route is SearchScreen);
-            return;
-          }
-          return resBody;
+          return _handleResponse(res, context);
         } else {
           return null;
         }
@@ -276,11 +291,12 @@ class NetworkUtil {
       String url, Map<String, dynamic> body, BuildContext context) async {
     url = Configs.BASE_URL + url;
     if (kDebugMode) print(url);
-    final Map<String, String> headers = {
-      'Authorization': Configs.login?.token ?? '',
-    };
-
-    body["token"] = Configs.login?.token ?? '';
+    final Map<String, String> headers = {};
+    final token = Configs.login?.token;
+    if (token != null) {
+      headers['Authorization'] = token;
+    }
+    // body["token"] = Configs.login?.token ?? '';
     debugPrint(jsonEncode(body));
     try {
       return http
@@ -295,15 +311,7 @@ class NetworkUtil {
           return null;
         }
         if (res.length > 4) {
-          final resBody = _decoder.convert(res);
-          if (resBody != null && resBody['success'] == -1) {
-            Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) {
-              return const LoginScreen();
-            }), (route) => route is SearchScreen);
-            return;
-          }
-          return resBody;
+          return _handleResponse(res, context);
         } else {
           return null;
         }
@@ -319,9 +327,11 @@ class NetworkUtil {
       {bool formData = true}) async {
     if (kDebugMode) print(url);
     dynamic sendBody;
-    final Map<String, String> headers = {
-      'Authorization': Configs.login?.token ?? '',
-    };
+    final Map<String, String> headers = {};
+    final token = Configs.login?.token;
+    if (token != null) {
+      headers['Authorization'] = token;
+    }
     if (formData) {
       sendBody = body;
       // headers['Content-Type'] = 'multipart/form-data';
@@ -343,15 +353,7 @@ class NetworkUtil {
           return null;
         }
         if (res.length > 4) {
-          final resBody = _decoder.convert(res);
-          if (resBody != null && resBody['success'] == -1) {
-            Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) {
-              return const LoginScreen();
-            }), (route) => route is SearchScreen);
-            return;
-          }
-          return resBody;
+          return _handleResponse(res, context);
         } else {
           return null;
         }
@@ -369,13 +371,14 @@ class NetworkUtil {
     BuildContext context,
   ) async {
     final uri = Uri.parse(Configs.BASE_URL + url);
-    final Map<String, String> headers = {
-      'Authorization': Configs.login?.token ?? '',
-    };
+    final Map<String, String> headers = {};
+    final token = Configs.login?.token;
+    if (token != null) {
+      headers['Authorization'] = token;
+    }
     var request = http.MultipartRequest("POST", uri);
     request.headers.addAll(headers);
     request.files.addAll(files);
-    request.fields['Authorization'] = Configs.login?.token ?? '';
 
     request.fields.addAll(body);
     final streamedResponse =
@@ -436,7 +439,6 @@ class NetworkUtil {
     List<TiemNotification> newData = [];
     const pageLength = 500;
     Map<String, String> body = {
-      "token": Configs.login?.token ?? '',
       "limit": pageLength.toString(),
       "offset": (pageLength * page).toString(),
     };
@@ -491,7 +493,6 @@ class NetworkUtil {
     //     break;
     // }
     Map<String, String> body = {
-      "token": Configs.login?.token ?? '',
       "role": Configs.role[Configs.userGroup],
       // "id": id
     };
@@ -556,8 +557,7 @@ class NetworkUtil {
   Future<bool> getProfileInfo(
     BuildContext context,
   ) async {
-    final response =
-        await get('user_info', {"token": Configs.login?.token ?? ''}, context);
+    final response = await get('user_info', {}, context);
     if (response != null && response['status']) {
       Configs.user = User.fromJson(response['user']);
 
@@ -574,7 +574,7 @@ class NetworkUtil {
     //     '${Configs.BASE_URL}dismiss_shop_notification?token=${Configs.login?.token}&id=${id}';
     String url = 'read_notification';
     if (kDebugMode) print(url);
-    final query = {'Authorization': Configs.login?.token ?? '', 'noti_id': id};
+    final query = {'noti_id': id};
     return await get(url, query, context);
   }
 
@@ -591,10 +591,8 @@ class NetworkUtil {
     //     '${Configs.BASE_URL}dismiss_shop_notification?token=${Configs.login?.token}&id=${id}';
     String url = notificationUrls[Configs.userGroup];
     if (kDebugMode) print(url);
-    final query = {
-      'Authorization': Configs.login?.token ?? '',
-    };
-    return await get(url, query, context);
+
+    return await get(url, {}, context);
   }
 
   // Future<dynamic> getorther(String url, Map<String, dynamic> par) async {
@@ -669,7 +667,6 @@ class NetworkUtil {
     debugPrint('token: $token');
     // var data = Configs.deviceData;
     Map<String, String> body = {
-      "token": Configs.login?.token ?? '',
       // "deviceId": data["deviceId"],
       // "userId": Configs.login?.userId ?? '',
       // "shopId": Configs.login?.shopId ?? '',

@@ -66,7 +66,6 @@ class _BuyerOrderDetailScreenState extends State<BuyerOrderDetailScreen>
 
   Future<void> getChat() async {
     Map<String, String> body = {
-      "token": Configs.login?.token ?? '',
       "order_id": Configs.orderId ?? '',
     };
     final rs = await _netUtil.get("buyer_messages", body, context);
@@ -80,7 +79,7 @@ class _BuyerOrderDetailScreenState extends State<BuyerOrderDetailScreen>
 
   // Future<void> getShipper() async {
   //   Map<String, String> body = {
-  //     "token": Configs.login?.token ?? '',
+  //
   //     "order_id": Configs.orderId ?? '',
   //   };
   //   soLuongSanPham = 0;
@@ -93,7 +92,6 @@ class _BuyerOrderDetailScreenState extends State<BuyerOrderDetailScreen>
 
   Future<void> getOrderDetail() async {
     Map<String, String> body = {
-      "token": Configs.login?.token ?? '',
       "order_id": Configs.orderId ?? '',
     };
     orderDetail = [];
@@ -546,7 +544,7 @@ class _BuyerOrderDetailScreenState extends State<BuyerOrderDetailScreen>
                           return const ShopPage(
                             status: -3,
                           );
-                        }), (Route<dynamic> route) => false);
+                        }), ModalRoute.withName('/home'));
                       }
                     } else {
                       Fluttertoast.showToast(msg: 'Huỷ đơn hàng thất bại');
@@ -621,7 +619,6 @@ class _BuyerOrderDetailScreenState extends State<BuyerOrderDetailScreen>
               maskType: EasyLoadingMaskType.clear,
             );
             Map<String, String> body = {
-              "token": Configs.login?.token ?? '',
               "order_id": order?.id ?? '',
               "status": "5"
             };
@@ -642,7 +639,7 @@ class _BuyerOrderDetailScreenState extends State<BuyerOrderDetailScreen>
                 return const ShopPage(
                   status: 5,
                 );
-              }), (Route<dynamic> route) => false);
+              }), ModalRoute.withName('/home'));
             }
           },
         );
@@ -652,12 +649,11 @@ class _BuyerOrderDetailScreenState extends State<BuyerOrderDetailScreen>
 
   Future<void> guiTinNhan() async {
     Map<String, String> body = {
-      "token": Configs.login?.token ?? '',
       "order_id": order?.id ?? '',
       "content": txtChat.text
     };
 
-    final rs = await _netUtil.get("buyer_add_message", body,context);
+    final rs = await _netUtil.get("buyer_add_message", body, context);
     FocusManager.instance.primaryFocus?.unfocus();
     if (rs != null && !rs.toString().contains('0')) {
       txtChat.clear();

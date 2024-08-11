@@ -385,7 +385,6 @@ class __DialogSendShipperState extends State<_DialogSendShipper>
     pickedOrders = null;
     setState(() {});
     Map<String, String> body = {
-      "token": Configs.login?.token ?? '',
       "status": (status?.status ?? 0).toString(),
     };
 
@@ -424,7 +423,6 @@ class __DialogSendShipperState extends State<_DialogSendShipper>
     );
     if (needConfirm) {
       Map<String, String> body = {
-        "token": Configs.login?.token ?? '',
         "order_id": pickedOrders?.id ?? '',
         "status": "1"
       };
@@ -441,7 +439,8 @@ class __DialogSendShipperState extends State<_DialogSendShipper>
       'order_id_array': jsonEncode([pickedOrders?.id ?? '']),
       'xeom_id': xeomId
     };
-    final result = await _netUtil.post('hkdo_gui_shiper', sendShipperBody, context);
+    final result =
+        await _netUtil.post('hkdo_gui_shiper', sendShipperBody, context);
     await EasyLoading.dismiss();
 
     if (result != null) {

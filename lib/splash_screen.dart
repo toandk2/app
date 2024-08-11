@@ -2,7 +2,11 @@ import 'dart:async';
 
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+// import 'package:hkd/order_detail/buyer_order_detail_screen.dart';
+// import 'package:hkd/order_detail/shipper_order_detail_screen.dart';
+// import 'package:hkd/order_detail/shop_order_detail_screen.dart';
 import 'package:hkd/search_screen.dart';
 import 'package:hkd/shipper/shipper_home_page.dart';
 import 'package:hkd/shop/shop_home_page.dart';
@@ -14,8 +18,11 @@ import 'package:package_info/package_info.dart';
 import 'anmition/fadeanimation.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
-
+  const SplashScreen({
+    Key? key,
+    // this.isNotificationNavigate = false,
+  }) : super(key: key);
+  // final bool isNotificationNavigate;
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
@@ -45,13 +52,16 @@ class _SplashScreenState extends State<SplashScreen> {
     //     //   _goLogin(context);
     //     // }
     // });
-    _init();
+
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      _init();
+    });
   }
 
   _init() async {
     final deviceInfoPlugin = DeviceInfoPlugin();
     await info.initPlatformState(deviceInfoPlugin);
-    Future.delayed(const Duration(seconds: 2), () async {
+    await Future.delayed(const Duration(seconds: 1), () async {
       await _login();
     });
   }
@@ -148,29 +158,26 @@ class _SplashScreenState extends State<SplashScreen> {
         ));
   }
 
-  // void _goLogin() {
-  //   Navigator.of(context).pushAndRemoveUntil(
-  //       MaterialPageRoute(builder: (context) {
-  //     return const LoginScreen();
-  //   }), (Route<dynamic> route) => false);
-  // }
-
   Future<void> _login() async {
     final helper = DatabaseHelper();
     final isLoggedin = await helper.isLoggedIn();
     if (!isLoggedin && mounted) {
-      Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) {
-        return const SearchScreen();
-      }), (Route<dynamic> route) => false);
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) {
+          return const SearchScreen();
+        }),
+      );
+      Navigator.pushReplacementNamed(context, '/home');
       return;
     }
     final user = await helper.getUser();
     if (user == null && mounted) {
-      Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) {
-        return const SearchScreen();
-      }), (Route<dynamic> route) => false);
+      // Navigator.of(context).push(
+      //   MaterialPageRoute(builder: (context) {
+      //     return const SearchScreen();
+      //   }),
+      // );
+      Navigator.pushReplacementNamed(context, '/home');
       return;
     }
     if (mounted) {
@@ -180,28 +187,40 @@ class _SplashScreenState extends State<SplashScreen> {
         user?.loai ?? 0, context,
         // oldUser: user,
       );
-      if (!result && mounted) {
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) {
-          return const SearchScreen();
-        }), (Route<dynamic> route) => false);
-        return;
-      }
-      Fluttertoast.showToast(msg: "Chào mừng quay trở lại.");
-      if (mounted) {
-        switch (Configs.userGroup) {
-          case 3:
-            Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) {
+
+      // Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+      //   return const SearchScreen();
+      // }));
+      if (result && mounted) {
+        Fluttertoast.showToast(msg: "Chào mừng quay trở lại.");
+        // if (!widget.isNotificationNavigate) {
+        Navigator.pushReplacementNamed(context, '/home');
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (BuildContext context) {
+          switch (Configs.userGroup) {
+            case 3:
               return const ShipperPage();
-            }), (Route<dynamic> route) => false);
-            break;
-          default:
-            Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) {
+            default:
               return const ShopPage();
-            }), (Route<dynamic> route) => false);
-        }
+          }
+        }));
+        //   return;
+        // }
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute<dynamic>(
+        //     builder: (BuildContext context) {
+        //       switch (Configs.userGroup) {
+        //         case 0:
+        //           return const BuyerOrderDetailScreen();
+        //         case 3:
+        //           return const ShipperOrderDetailScreen();
+        //         default:
+        //           return const ShopOrderDetailScreen();
+        //       }
+        //     },
+        //   ),
+        // );
       }
     }
   }

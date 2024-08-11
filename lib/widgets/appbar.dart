@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:getwidget/getwidget.dart';
@@ -22,7 +21,6 @@ import 'package:hkd/trade/cart_screen.dart';
 import 'package:hkd/ultils/func.dart';
 import 'package:hkd/ultils/styles.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:material_dialogs/material_dialogs.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 // myAppBar() {
@@ -85,20 +83,20 @@ class _MyDrawerState extends State<MyDrawer> {
       final models = await json.decode(response);
       final shopsData = ShoptypeModel.fromListJson(models);
       // if (Configs.userGroup != 1) return;
-      final result = await _netUtil.searchAll(
-        kw: '',
-        shopType: '',
-        quote: '',
-        lat: '21',
-        lon: '105.85',
-        userGroup: tempUser,
-        context: context,
-      );
-      (result?.shops ?? []).sort((a, b) => double.parse(a.distance ?? '0')
-          .compareTo(double.parse(b.distance ?? '0')));
-      await EasyLoading.dismiss();
       final parentContext = widget.parentContext;
       if (parentContext.mounted) {
+        final result = await _netUtil.searchAll(
+          kw: '',
+          shopType: '',
+          quote: '',
+          lat: '21',
+          lon: '105.85',
+          userGroup: tempUser,
+          context: parentContext,
+        );
+        (result?.shops ?? []).sort((a, b) => double.parse(a.distance ?? '0')
+            .compareTo(double.parse(b.distance ?? '0')));
+        await EasyLoading.dismiss();
         Navigator.of(parentContext).pushAndRemoveUntil(
           MaterialPageRoute<dynamic>(
             builder: (BuildContext context) => ShopListWidget(
@@ -108,7 +106,7 @@ class _MyDrawerState extends State<MyDrawer> {
               shopsData: shopsData,
             ),
           ),
-          (route) => false,
+          ModalRoute.withName('/home'),
         );
       }
     } catch (e) {
@@ -189,9 +187,9 @@ class _MyDrawerState extends State<MyDrawer> {
                             // }
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                  builder: (context) => const SearchScreen(),
+                                  builder: (_) => const SearchScreen(),
                                 ),
-                                (route) => false);
+                                ModalRoute.withName('/home'));
                           },
                           child: Row(
                             children: [
@@ -230,17 +228,13 @@ class _MyDrawerState extends State<MyDrawer> {
                   const Gap(20),
                   GFButton(
                     onPressed: () {
-                      // Navigator.of(context).pushAndRemoveUntil(
-                      //     MaterialPageRoute(builder: (context) {
-                      //   return const LoginScreen();
-                      // }), (Route<dynamic> route) => false);
                       Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute<dynamic>(
                             builder: (BuildContext context) =>
                                 const RegisterScreen(),
                           ),
-                          (Route<dynamic> route) => false);
+                          ModalRoute.withName('/home'));
                     },
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 12),
@@ -259,9 +253,9 @@ class _MyDrawerState extends State<MyDrawer> {
                   GFButton(
                     onPressed: () {
                       Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (context) {
+                          MaterialPageRoute(builder: (_) {
                         return const LoginScreen();
-                      }), (Route<dynamic> route) => false);
+                      }), ModalRoute.withName('/home'));
                     },
                     padding: const EdgeInsets.all(16),
                     borderShape: RoundedRectangleBorder(
@@ -304,28 +298,12 @@ class _MyDrawerState extends State<MyDrawer> {
                           onTap: toggleShow,
                           child: Stack(
                             children: [
-                              Container(
-                                clipBehavior: Clip.antiAlias,
-                                decoration: const ShapeDecoration(
-                                  color: Color(0xFFB2B2B2),
-                                  shape: OvalBorder(),
-                                ),
-                                height: 40,
-                                width: 40,
-                                padding: const EdgeInsets.all(8),
-                                child: Image.network(
-                                  Configs.BASE_URL.replaceAll(
-                                          '/api', '/images/avatars') +
-                                      (Configs.user?.linkImg ?? ''),
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return SvgPicture.asset(
-                                      'assets/icons/profile/user.svg',
-                                      color: Colors.white,
-                                      // width: 100,
-                                      // height: 100,
-                                    );
-                                  },
-                                ),
+                              CircleAvatar(
+                                backgroundColor: const Color(0xFFB2B2B2),
+                                backgroundImage: NetworkImage(Configs.BASE_URL
+                                        .replaceAll('/api', '/images/avatars') +
+                                    (Configs.user?.linkImg ?? '')),
+                                radius: 20,
                               ),
                               if (_secondProfile != null)
                                 Positioned(
@@ -354,8 +332,8 @@ class _MyDrawerState extends State<MyDrawer> {
                         Expanded(
                           child: InkWell(
                             onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(builder: (_) {
                                   if (Configs.userGroup != 3) {
                                     return const ShopPage(
                                         // pageIndex: 0,
@@ -363,6 +341,7 @@ class _MyDrawerState extends State<MyDrawer> {
                                   }
                                   return const ShipperPage();
                                 }),
+                                ModalRoute.withName('/home'),
                               );
                             },
                             child: Row(
@@ -382,7 +361,8 @@ class _MyDrawerState extends State<MyDrawer> {
                                         const Gap(4),
                                         Text(
                                           '${Configs.selectType[_firstProfile?.type ?? 0]?['text'] ?? ''} - ${_firstProfile?.id ?? ''}',
-                                          style: Styles.textStyle,
+                                          style: Styles.headline4Style
+                                              .copyWith(color: Colors.black),
                                         )
                                       ]),
                                 ),
@@ -396,11 +376,11 @@ class _MyDrawerState extends State<MyDrawer> {
                         if (Configs.userGroup == 0)
                           InkWell(
                             onTap: () {
-                              Navigator.of(context).pop();
-                              Navigator.of(context).push(
+                              Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                  builder: (context) => const CartScreen(),
+                                  builder: (_) => const CartScreen(),
                                 ),
+                                ModalRoute.withName('/home'),
                               );
                             },
                             child: Stack(
@@ -427,38 +407,51 @@ class _MyDrawerState extends State<MyDrawer> {
                           12,
                         ),
                         InkWell(
-                          onTap: () async {
-                            await _netUtil.logout(context);
-                          },
-                          child: Lottie.asset("assets/images/logout.json",
-                              repeat: true,
-                              reverse: true,
-                              animate: true,
-                              height: 40),
-                        )
+                            onTap: () async {
+                              await _netUtil.logout(context);
+                            },
+                            // child: Lottie.asset("assets/images/logout.json",
+                            //     repeat: true,
+                            //     reverse: true,
+                            //     animate: true,
+                            //     height: 40),
+                            child: Image.asset(
+                              'assets/images/bx-log-out.png',
+                              height: 40,
+                            ))
                       ],
                     ),
                   ),
                   if (_showSecondProfile && _secondProfile != null)
                     InkWell(
                       onTap: () async {
-                        final result = await _netUtil.login(
-                            Configs.login?.userName ?? '',
-                            Configs.login?.userPass ?? '',
-                            _secondProfile?.type ?? 0,context);
-                        if (result && mounted) {
+                        final result = await _netUtil.post(
+                            'switch_user', {}, widget.parentContext);
+                        if (result != null &&
+                            result['success'] == 1 &&
+                            mounted) {
+                          Configs.login?.token = result['token'];
+                          final oldUserGroup = Configs.userGroup;
+                          Configs.userGroup = oldUserGroup == 1 ? 0 : 1;
+                          await _netUtil.getProfileInfo(widget.parentContext);
                           switch (Configs.userGroup) {
                             case 3:
-                              Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(builder: (context) {
-                                return const ShipperPage();
-                              }), (Route<dynamic> route) => false);
+                              Navigator.of(widget.parentContext)
+                                  .pushAndRemoveUntil(
+                                MaterialPageRoute(builder: (_) {
+                                  return const ShipperPage();
+                                }),
+                                ModalRoute.withName('/home'),
+                              );
                               break;
                             default:
-                              Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(builder: (context) {
-                                return const ShopPage();
-                              }), (Route<dynamic> route) => false);
+                              Navigator.of(widget.parentContext)
+                                  .pushAndRemoveUntil(
+                                MaterialPageRoute(builder: (_) {
+                                  return const ShopPage();
+                                }),
+                                ModalRoute.withName('/home'),
+                              );
                           }
                         } else {
                           Fluttertoast.showToast(
@@ -482,28 +475,12 @@ class _MyDrawerState extends State<MyDrawer> {
                             ]),
                         child: Row(
                           children: [
-                            Container(
-                              clipBehavior: Clip.antiAlias,
-                              decoration: const ShapeDecoration(
-                                color: Color(0xFFB2B2B2),
-                                shape: OvalBorder(),
-                              ),
-                              height: 40,
-                              width: 40,
-                              padding: const EdgeInsets.all(8),
-                              child: Image.network(
-                                Configs.BASE_URL
-                                        .replaceAll('/api', '/images/avatars') +
-                                    (Configs.user?.linkImg ?? ''),
-                                errorBuilder: (context, error, stackTrace) {
-                                  return SvgPicture.asset(
-                                    'assets/icons/profile/user.svg',
-                                    color: Colors.white,
-                                    // width: 100,
-                                    // height: 100,
-                                  );
-                                },
-                              ),
+                            CircleAvatar(
+                              backgroundColor: const Color(0xFFB2B2B2),
+                              backgroundImage: NetworkImage(Configs.BASE_URL
+                                      .replaceAll('/api', '/images/avatars') +
+                                  (Configs.user?.linkImg ?? '')),
+                              radius: 20,
                             ),
                             const Gap(4),
                             Expanded(
@@ -544,11 +521,11 @@ class _MyDrawerState extends State<MyDrawer> {
                             // if (Configs.userGroup != 0) return;
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                  builder: (context) => const SearchScreen(
+                                  builder: (_) => const SearchScreen(
                                     tempUserGroup: 0,
                                   ),
                                 ),
-                                (route) => false);
+                                ModalRoute.withName('/home'));
                           },
                         ),
                         const Gap(
@@ -576,11 +553,11 @@ class _MyDrawerState extends State<MyDrawer> {
                                       'Bạn đang không đăng nhập với tư cách là hộ kinh doanh.\nVui lòng đăng nhập đúng đối tượng để thao tác');
                               return;
                             }
-                            Navigator.of(context).pop();
-                            Navigator.of(context).push(
+                            Navigator.of(context).pushAndRemoveUntil(
                               MaterialPageRoute(
-                                builder: (context) => const ShopPage(),
+                                builder: (_) => const ShopPage(),
                               ),
+                              ModalRoute.withName('/home'),
                             );
                           },
                         ),
@@ -590,11 +567,12 @@ class _MyDrawerState extends State<MyDrawer> {
                             text: 'Tìm người vận chuyển',
                             onTap: () {
                               if (Configs.userGroup != 1) return;
-                              Navigator.of(context).push(
+                              Navigator.of(widget.parentContext)
+                                  .pushAndRemoveUntil(
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      const ShopFindShipperScreen(),
+                                  builder: (_) => const ShopFindShipperScreen(),
                                 ),
+                                ModalRoute.withName('/home'),
                               );
                             },
                           ),
@@ -618,13 +596,11 @@ class _MyDrawerState extends State<MyDrawer> {
                                       'Bạn đang không đăng nhập với tư cách là người vận chuyển.\nVui lòng đăng nhập đúng đối tượng để thao tác');
                               return;
                             }
-                            Navigator.of(context).pop();
-
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => const ShipperPage(),
-                              ),
-                            );
+                            Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                  builder: (_) => const ShipperPage(),
+                                ),
+                                ModalRoute.withName('/home'));
                           },
                         ),
                       ],
@@ -638,10 +614,11 @@ class _MyDrawerState extends State<MyDrawer> {
                         icon: 'assets/icons/drawer/lock.png',
                         text: 'Thay đổi mật khẩu',
                         onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) {
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(builder: (_) {
                               return const ChangPasswordScreen();
                             }),
+                            ModalRoute.withName('/home'),
                           );
                         },
                       ),
@@ -660,15 +637,14 @@ class _MyDrawerState extends State<MyDrawer> {
                               );
                             }),
                         onTap: () {
-                          Navigator.of(context).pop();
-
-                          Navigator.push(
+                          Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute<dynamic>(
                               builder: (BuildContext context) {
                                 return const NotificationScreen();
                               },
                             ),
+                            ModalRoute.withName('/home'),
                           );
                         },
                       ),
@@ -703,9 +679,9 @@ class _MyDrawerState extends State<MyDrawer> {
                               }
                               Navigator.of(context).pushAndRemoveUntil(
                                   MaterialPageRoute(
-                                    builder: (context) => const SearchScreen(),
+                                    builder: (_) => const SearchScreen(),
                                   ),
-                                  (route) => false);
+                                  ModalRoute.withName('/home'));
                             },
                             child: Row(
                               children: [
@@ -840,9 +816,9 @@ class MyScaffold extends StatelessWidget {
                 // }
                 Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(
-                      builder: (context) => const SearchScreen(),
+                      builder: (_) => const SearchScreen(),
                     ),
-                    (route) => false);
+                    ModalRoute.withName('/home'));
               },
               child: Row(
                 children: [

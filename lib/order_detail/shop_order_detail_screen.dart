@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:hkd/search_screen.dart';
 import 'package:hkd/shop/shop_home_page.dart';
 import 'package:hkd/ultils/chat_models.dart';
 
@@ -68,7 +69,6 @@ class _ShopOrderDetailScreenState extends State<ShopOrderDetailScreen>
 
   Future<void> getChat() async {
     Map<String, String> body = {
-      "token": Configs.login?.token ?? '',
       "order_id": Configs.orderId ?? '',
     };
     final rs = await _netUtil.get("shop_messages", body, context);
@@ -82,11 +82,7 @@ class _ShopOrderDetailScreenState extends State<ShopOrderDetailScreen>
   }
 
   Future<void> getShipper() async {
-    Map<String, String> body = {
-      "token": Configs.login?.token ?? '',
-      "order_id": Configs.orderId ?? '',
-      'type': '1'
-    };
+    Map<String, String> body = {"order_id": Configs.orderId ?? '', 'type': '1'};
     soLuongSanPham = 0;
     _status = 0;
     setState(() {});
@@ -99,7 +95,6 @@ class _ShopOrderDetailScreenState extends State<ShopOrderDetailScreen>
 
   Future<void> getOrderDetail() async {
     Map<String, String> body = {
-      "token": Configs.login?.token ?? '',
       "order_id": Configs.orderId ?? '',
     };
     orderDetail = [];
@@ -528,8 +523,8 @@ class _ShopOrderDetailScreenState extends State<ShopOrderDetailScreen>
                           'token': Configs.login?.token ?? '',
                           'order_id': order?.id ?? ''
                         };
-                        final result =
-                            await _netUtil.post('shop_reject_order', body, context);
+                        final result = await _netUtil.post(
+                            'shop_reject_order', body, context);
                         await EasyLoading.dismiss();
                         if (result != null && result['success'] == 1) {
                           Fluttertoast.showToast(msg: 'Huỷ đơn thành công');
@@ -539,7 +534,9 @@ class _ShopOrderDetailScreenState extends State<ShopOrderDetailScreen>
                               return const ShopPage(
                                 status: -2,
                               );
-                            }), (Route<dynamic> route) => false);
+                            }),
+                                (Route<dynamic> route) =>
+                                    route is SearchScreen);
                           }
                         } else {
                           Fluttertoast.showToast(msg: 'Huỷ đơn thất bại');
@@ -583,13 +580,12 @@ class _ShopOrderDetailScreenState extends State<ShopOrderDetailScreen>
                           maskType: EasyLoadingMaskType.clear,
                         );
                         Map<String, String> body = {
-                          "token": Configs.login?.token ?? '',
                           "order_id": order?.id ?? '',
                           "status": "1"
                         };
                         try {
-                          final rs =
-                              await _netUtil.get("change_order_status", body, context);
+                          final rs = await _netUtil.get(
+                              "change_order_status", body, context);
                           await EasyLoading.dismiss();
                           if (rs == null || rs["success"].toString() != "1") {
                             Fluttertoast.showToast(
@@ -604,7 +600,9 @@ class _ShopOrderDetailScreenState extends State<ShopOrderDetailScreen>
                               return const ShopPage(
                                 status: 1,
                               );
-                            }), (Route<dynamic> route) => false);
+                            }),
+                                (Route<dynamic> route) =>
+                                    route is SearchScreen);
                           }
                         } catch (e) {
                           await EasyLoading.dismiss();
@@ -690,11 +688,11 @@ class _ShopOrderDetailScreenState extends State<ShopOrderDetailScreen>
                           maskType: EasyLoadingMaskType.clear,
                         );
                         Map<String, String> body = {
-                          "token": Configs.login?.token ?? '',
                           "order_id": order?.id ?? '',
                         };
 
-                        final rs = await _netUtil.get("approve_shipper", body, context);
+                        final rs = await _netUtil.get(
+                            "approve_shipper", body, context);
                         await EasyLoading.dismiss();
                         if (rs == null || rs["success"].toString() != "1") {
                           Fluttertoast.showToast(
@@ -709,7 +707,7 @@ class _ShopOrderDetailScreenState extends State<ShopOrderDetailScreen>
                             return const ShopPage(
                               status: 3,
                             );
-                          }), (Route<dynamic> route) => false);
+                          }), ModalRoute.withName('/home'));
                         }
                       });
                 },
@@ -749,11 +747,11 @@ class _ShopOrderDetailScreenState extends State<ShopOrderDetailScreen>
                           maskType: EasyLoadingMaskType.clear,
                         );
                         Map<String, String> body = {
-                          "token": Configs.login?.token ?? '',
                           "order_id": order?.id ?? '',
                         };
 
-                        final rs = await _netUtil.get("reject_shipper", body, context);
+                        final rs =
+                            await _netUtil.get("reject_shipper", body, context);
                         await EasyLoading.dismiss();
                         if (rs == null || rs["success"].toString() != "1") {
                           Fluttertoast.showToast(
@@ -768,7 +766,7 @@ class _ShopOrderDetailScreenState extends State<ShopOrderDetailScreen>
                             return const ShopPage(
                               status: 2,
                             );
-                          }), (Route<dynamic> route) => false);
+                          }), ModalRoute.withName('/home'));
                         }
                       });
                 },
@@ -820,11 +818,11 @@ class _ShopOrderDetailScreenState extends State<ShopOrderDetailScreen>
                 maskType: EasyLoadingMaskType.clear,
               );
               Map<String, String> body = {
-                "token": Configs.login?.token ?? '',
                 "order_id": order?.id ?? '',
                 "status": "5"
               };
-              final rs = await _netUtil.get("change_order_status", body, context);
+              final rs =
+                  await _netUtil.get("change_order_status", body, context);
               await EasyLoading.dismiss();
               if (rs == null || rs["success"].toString() != "1") {
                 Fluttertoast.showToast(
@@ -842,7 +840,7 @@ class _ShopOrderDetailScreenState extends State<ShopOrderDetailScreen>
                       );
                     },
                   ),
-                  (Route<dynamic> route) => false,
+                  ModalRoute.withName('/home'),
                 );
               }
             },
@@ -853,7 +851,6 @@ class _ShopOrderDetailScreenState extends State<ShopOrderDetailScreen>
 
   Future<void> guiTinNhan() async {
     Map<String, String> body = {
-      "token": Configs.login?.token ?? '',
       "order_id": order?.id ?? '',
       "content": txtChat.text
     };

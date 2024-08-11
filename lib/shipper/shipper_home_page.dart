@@ -93,7 +93,7 @@ class _ShipperPageState extends State<ShipperPage>
     _statusShiperOrderList = 0;
     setState(() {});
     orders.addAll(await _getOrders(status?.status ?? 0));
-    
+
     if (orders.isEmpty) {
       // txtStatus = "Không tìm thấy đơn hàng";
       _statusShiperOrderList = 3;
@@ -110,7 +110,6 @@ class _ShipperPageState extends State<ShipperPage>
     _statusShiperOrderList = 0;
     setState(() {});
     Map<String, String> body = {
-      "token": Configs.login?.token ?? '',
       "status": status.toString(),
     };
 
@@ -583,7 +582,6 @@ class _ShipperPageState extends State<ShipperPage>
                                   maskType: EasyLoadingMaskType.clear,
                                 );
                                 Map<String, String> body = {
-                                  "token": Configs.login?.token ?? '',
                                   "order_id": donHang.orderId ?? '',
                                 };
 
@@ -643,7 +641,6 @@ class _ShipperPageState extends State<ShipperPage>
                                   maskType: EasyLoadingMaskType.clear,
                                 );
                                 Map<String, String> body = {
-                                  "token": Configs.login?.token ?? '',
                                   "order_id": donHang.orderId ?? '',
                                 };
 

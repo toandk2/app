@@ -8,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:hkd/anmition/fadeanimation.dart';
+import 'package:hkd/firebase/notification_setup.dart';
 import 'package:hkd/shipper/shipper_find_order_screen.dart';
 import 'package:hkd/shop/shop_find_shipper_screen.dart';
 import 'package:hkd/trade/shop_list_screen.dart';
@@ -57,6 +58,11 @@ class _SearchScreenState extends State<SearchScreen> {
       userColor = Configs.getUserColor(temporaryUserGroup);
       setState(() {});
     }
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      _getAutoScroll();
+      listenFirebase(context);
+      readJson();
+    });
     super.initState();
   }
 
@@ -66,13 +72,6 @@ class _SearchScreenState extends State<SearchScreen> {
     _productCtrl.dispose();
     _scrollController.dispose();
     super.dispose();
-  }
-
-  @override
-  void didChangeDependencies() {
-    _getAutoScroll();
-    readJson();
-    super.didChangeDependencies();
   }
 
   Future<void> readJson() async {
@@ -114,8 +113,8 @@ class _SearchScreenState extends State<SearchScreen> {
     // }
     List<Product> products = [];
 
-    final value = await _networkUtil.get(
-        'lookup', {'type': productType?.toString() ?? '', 'kw': mainProduct}, context);
+    final value = await _networkUtil.get('lookup',
+        {'type': productType?.toString() ?? '', 'kw': mainProduct}, context);
     if (value != null) {
       products = ProductSuggestion.fromJson(value).products ?? [];
     }
@@ -464,7 +463,8 @@ class _SearchScreenState extends State<SearchScreen> {
                     quote: _sellerMessageCtrl.text.trim(),
                     lat: addressModel?.lat ?? '',
                     lon: addressModel?.lon ?? '',
-                    userGroup: temporaryUserGroup,context: context);
+                    userGroup: temporaryUserGroup,
+                    context: context);
                 (result?.shops ?? []).sort((a, b) =>
                     double.parse(a.distance ?? '0')
                         .compareTo(double.parse(b.distance ?? '0')));
@@ -504,7 +504,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
               // textColor: Colors.white,
               textStyle: const TextStyle(
-                color: Colors.white,
+                color: Colors.black,
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
               ),

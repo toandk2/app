@@ -21,8 +21,10 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:collection/collection.dart';
 
 class ShopDetailScreen extends StatefulWidget {
-  const ShopDetailScreen({super.key, required this.shopId});
+  const ShopDetailScreen(
+      {super.key, required this.shopId, this.isShopBuying = false});
   final String shopId;
+  final bool isShopBuying;
   @override
   State<ShopDetailScreen> createState() => _ShopDetailScreenState();
 }
@@ -66,8 +68,10 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
   }
 
   getCartShop() async {
-    final result = await _networkUtil.get('get_cart_by_shop_id',
-        {'shop_id': widget.shopId, 'buyer_id': Configs.login?.buyerId ?? ''}, context);
+    final result = await _networkUtil.get(
+        'get_cart_by_shop_id',
+        {'shop_id': widget.shopId, 'buyer_id': Configs.login?.buyerId ?? ''},
+        context);
     if (result != null && result['success'] == 1 && result['data'] != null) {
       try {
         final products = CartItem.fromListCartShopJson(
@@ -84,7 +88,8 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
   }
 
   _getShop() async {
-    final result = await _networkUtil.get('shop', {'shop_id': widget.shopId}, context);
+    final result =
+        await _networkUtil.get('shop', {'shop_id': widget.shopId}, context);
     if (result != null) {
       try {
         _shopDetail = ShopDetail.fromJson(result);
@@ -117,11 +122,13 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
             shopName: _shopDetail?.shopName,
           );
         }
-        if (currentUnsignedCart != null && Configs.login != null) {
+        if (currentUnsignedCart != null &&
+            Configs.login != null &&
+            Configs.userGroup == 0) {
           currentUnsignedCart.buyerId = Configs.login?.buyerId ?? '';
           await _syncCart(currentUnsignedCart);
         }
-        if (Configs.login != null) {
+        if (Configs.login != null && Configs.userGroup == 0) {
           await getCartShop();
         }
       } catch (e) {
@@ -162,8 +169,8 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
                   'products':
                       json.encode(CartItem.toListSyncCartJson(products ?? []))
                 };
-                final result =
-                    await _networkUtil.post('async_cart_in_shop', body, context);
+                final result = await _networkUtil.post(
+                    'async_cart_in_shop', body, context);
                 await EasyLoading.dismiss();
                 if (result != null && result['success'] == 1) {
                   Configs.unSignedCart.remove(widget.shopId);
@@ -223,6 +230,12 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
               'Bạn cần chuyển sang chế độ Người tìm mua để có thể thực hiện chức năng này');
       return;
     }
+    if (widget.isShopBuying && Configs.user?.shopId == "0") {
+      Fluttertoast.showToast(
+          msg:
+              'Bạn cần đăng nhập vào tài khoản Hộ kinh doanh với chế độ tìm mua để có thể thực hiện chức năng này');
+      return;
+    }
     final isNewCart = _checkoutModel.data.isEmpty;
     final product = _products.elementAtOrNull(index);
     if (product == null) return;
@@ -254,6 +267,12 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
               'Bạn cần chuyển sang chế độ Người tìm mua để có thể thực hiện chức năng này');
       return;
     }
+    if (widget.isShopBuying && Configs.user?.shopId == "0") {
+      Fluttertoast.showToast(
+          msg:
+              'Bạn cần đăng nhập vào tài khoản Hộ kinh doanh với chế độ tìm mua để có thể thực hiện chức năng này');
+      return;
+    }
     final isNewCart = _checkoutModel.data.isEmpty;
     CartItem? currentProduct = _checkoutModel.data
         .firstWhereOrNull((element) => element.productId == item.productId);
@@ -275,7 +294,7 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
     }
     setState(() {});
     await _addItemToCart(currentProduct);
-    if (isNewCart && Configs.login != null) {
+    if (isNewCart && Configs.login != null && Configs.userGroup == 0) {
       await _networkUtil.updateCartCount(context);
     }
   }
@@ -299,7 +318,7 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
       _totalProductCost += element.subTotal ?? 0;
     }
     setState(() {});
-    if (Configs.login != null) {
+    if (Configs.login != null && Configs.userGroup == 0) {
       if (_checkoutModel.data.isEmpty) {
         await _networkUtil.deleteCartOnline(_checkoutModel.shopId, context);
       } else {
@@ -373,7 +392,8 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
       'shop_id': _checkoutModel.shopId ?? '',
       'product_id': item.productId ?? '',
     };
-    final result = await _networkUtil.post('delete_product_in_cart', body, context);
+    final result =
+        await _networkUtil.post('delete_product_in_cart', body, context);
     if (result != null && result['success'] == 1) {
       return;
     }
@@ -390,8 +410,9 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
       "addInfo": _checkoutModel.name ?? '',
     };
 
-    final result = await _networkUtil
-        .postNoUrl('https://api.vietqr.io/v2/generate', data, context, formData: false);
+    final result = await _networkUtil.postNoUrl(
+        'https://api.vietqr.io/v2/generate', data, context,
+        formData: false);
     if (result != null && result['data'] != null) {
       _checkoutModel.qrcode =
           result['data']['qrDataURL'].toString().split(',')[1];

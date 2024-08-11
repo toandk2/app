@@ -40,24 +40,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         if (result != null && result['success'] == 1) {
           Fluttertoast.showToast(
               msg: 'Gửi yêu cầu thay đổi mật khẩu thành công!');
-          // await _netUtil.login(Configs.login?.userName ?? '', _phoneNumber ?? "",
-          //     Configs.userGroup);
-
-          // if (mounted) {
-          //   switch (Configs.userGroup) {
-          //     case 3:
-          //       Navigator.of(context).pushAndRemoveUntil(
-          //           MaterialPageRoute(builder: (context) {
-          //         return const ShipperPage();
-          //       }), (Route<dynamic> route) => false);
-          //       break;
-          //     default:
-          //       Navigator.of(context).pushAndRemoveUntil(
-          //           MaterialPageRoute(builder: (context) {
-          //         return const ShopPage();
-          //       }), (Route<dynamic> route) => false);
-          //   }
-          // }
+     
         } else {
           Fluttertoast.showToast(msg: 'Đổi mật khẩu thất bại!');
         }

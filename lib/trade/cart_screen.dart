@@ -38,8 +38,8 @@ class _CartScreenState extends State<CartScreen> {
     //   setState(() {});
     //   return;
     // }
-    final result = await _netUtil
-        .get('get_cart', {'buyer_id': Configs.login?.buyerId ?? ''}, context);
+    final result = await _netUtil.get(
+        'get_cart', {'buyer_id': Configs.login?.buyerId ?? ''}, context);
     if (result != null && result['success'] == 1) {
       models = CartModel.fromListJson(result['data']);
       setState(() {});
@@ -96,8 +96,8 @@ class _CartItemWidget extends StatefulWidget {
 class _CartItemWidgetState extends State<_CartItemWidget> {
   final _netUtil = NetworkUtil();
   onTapCheckout() async {
-    final result =
-        await _netUtil.get('shop', {'shop_id': widget.model.shopId ?? ''}, context);
+    final result = await _netUtil.get(
+        'shop', {'shop_id': widget.model.shopId ?? ''}, context);
     if (result != null) {
       try {
         final shopDetail = ShopDetail.fromJson(result);

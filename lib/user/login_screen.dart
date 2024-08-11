@@ -69,7 +69,6 @@ class _LoginScreenState extends State<LoginScreen>
         builder: (BuildContext context) => const RegisterScreen(),
       ),
     );
-    
   }
 
   @override
@@ -350,7 +349,7 @@ class _LoginScreenState extends State<LoginScreen>
 
       try {
         final loginResult = await networkUtil.login(
-            _username ?? '', _password ?? "", selectedIndex,context);
+            _username ?? '', _password ?? "", selectedIndex, context);
         setState(() => _isLoading = false);
 
         if (!loginResult) {
@@ -366,57 +365,15 @@ class _LoginScreenState extends State<LoginScreen>
               Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(builder: (context) {
                 return const ShipperPage();
-              }), (Route<dynamic> route) => false);
+              }), ModalRoute.withName('/home'));
               break;
             default:
               Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(builder: (context) {
                 return const ShopPage();
-              }), (Route<dynamic> route) => false);
+              }), ModalRoute.withName('/home'));
           }
         }
-        // if (Configs.unSignedCart.isNotEmpty && mounted) {
-          // showDialog(
-          //   context: context,
-          //   builder: (_) {
-          //     return DialogAction(
-          //       icon: Image.asset('assets/images/icons-complete.png'),
-          //       title: 'Thêm hàng vãn lai',
-          //       content:
-          //           'Bạn có các sản phẩm trong giỏ hàng, bạn có muốn thêm vào giỏ hàng của mình không?',
-          //       text1: 'Đồng ý',
-          //       text2: 'Không',
-          //       onTap1: () async {
-          //         Navigator.pop(context);
-          //         await EasyLoading.show(
-          //           status: 'Đang tải xử lý...',
-          //           maskType: EasyLoadingMaskType.clear,
-          //         );
-          //         final body = {
-          //           'token': Configs.login?.token ?? '',
-          //           'order_id': order?.id ?? ''
-          //         };
-          //         final result =
-          //             await _netUtil.post('buyer_cancel_order', body);
-          //         await EasyLoading.dismiss();
-          //         if (result != null && result['success'] == 1) {
-          //           Fluttertoast.showToast(msg: 'Huỷ đơn hàng thành công');
-          //           if (mounted) {
-          //             Navigator.of(context).pushAndRemoveUntil(
-          //                 MaterialPageRoute(builder: (context) {
-          //               return const ShopPage(
-          //                 status: -3,
-          //               );
-          //             }), (Route<dynamic> route) => false);
-          //           }
-          //         } else {
-          //           Fluttertoast.showToast(msg: 'Huỷ đơn hàng thất bại');
-          //         }
-          //       },
-          //       onTap2: () => Navigator.pop(context),
-          //     );
-          //   });
-        // }
       } catch (e) {
         Fluttertoast.showToast(msg: "Đăng nhập không thành công.");
         setState(() => _isLoading = false);

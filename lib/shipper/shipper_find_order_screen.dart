@@ -81,7 +81,6 @@ class _ShipperFindOrderPageState extends State<ShipperFindOrderPage>
     _statusShiperOrderList = 0;
     setState(() {});
     Map<String, String> body = {
-      "token": Configs.login?.token ?? '',
       "status": (status?.status ?? 0).toString(),
     };
 
@@ -451,7 +450,6 @@ class _ShipperFindOrderPageState extends State<ShipperFindOrderPage>
                                 maskType: EasyLoadingMaskType.clear,
                               );
                               Map<String, String> body = {
-                                "token": Configs.login?.token ?? '',
                                 "order_id": donHang.orderId ?? '',
                               };
 

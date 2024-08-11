@@ -74,10 +74,11 @@ class _ShipperRegisterScreenState extends State<ShipperRegisterScreen> {
       ];
       final json = _model.toJson();
       try {
-        final result = await networkUtil.multipartPost('xeom_reg', json, files,context);
+        final result =
+            await networkUtil.multipartPost('xeom_reg', json, files, context);
         if (result['success'] == 1 && mounted) {
           final loginResult = await networkUtil.login(
-              _model.xeomPhone ?? '', _model.xeomPassword ?? '', 3,context);
+              _model.xeomPhone ?? '', _model.xeomPassword ?? '', 3, context);
           setState(() => _isLoading = false);
 
           if (!loginResult) {
@@ -90,7 +91,7 @@ class _ShipperRegisterScreenState extends State<ShipperRegisterScreen> {
             Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) {
               return const ShipperPage();
-            }), (Route<dynamic> route) => false);
+            }), ModalRoute.withName('/home'));
           }
         }
       } catch (e) {

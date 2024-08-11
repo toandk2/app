@@ -54,7 +54,7 @@ class _BuyerRegisterScreenState extends State<BuyerRegisterScreen> {
                 MaterialPageRoute(
                   builder: (context) => const ShopPage(),
                 ),
-                (route) => false);
+                ModalRoute.withName('/home'));
           }
         }
       } catch (e) {

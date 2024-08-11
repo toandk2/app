@@ -8,6 +8,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:hkd/search_screen.dart';
 import 'package:hkd/shipper/shipper_home_page.dart';
 import 'package:hkd/ultils/chat_models.dart';
 
@@ -72,7 +73,6 @@ class _ShipperOrderDetailScreenState extends State<ShipperOrderDetailScreen>
 
   Future<void> getChat() async {
     Map<String, String> body = {
-      "token": Configs.login?.token ?? '',
       "order_id": Configs.orderId ?? '',
     };
     final rs = await _netUtil.get("ship_messages", body, context);
@@ -86,7 +86,6 @@ class _ShipperOrderDetailScreenState extends State<ShipperOrderDetailScreen>
 
   Future<void> getOrderDetail() async {
     Map<String, String> body = {
-      "token": Configs.login?.token ?? '',
       "order_id": Configs.orderId ?? '',
     };
     orderDetail = [];
@@ -534,7 +533,6 @@ class _ShipperOrderDetailScreenState extends State<ShipperOrderDetailScreen>
                         maskType: EasyLoadingMaskType.clear,
                       );
                       Map<String, String> body = {
-                        "token": Configs.login?.token ?? '',
                         "order_id": order?.id ?? '',
                       };
                       if (mounted) {
@@ -548,7 +546,9 @@ class _ShipperOrderDetailScreenState extends State<ShipperOrderDetailScreen>
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(builder: (context) {
                               return const ShipperPage();
-                            }), (Route<dynamic> route) => false);
+                            }),
+                                (Route<dynamic> route) =>
+                                    route is SearchScreen);
                           }
                         } else {
                           Fluttertoast.showToast(
@@ -617,17 +617,13 @@ class _ShipperOrderDetailScreenState extends State<ShipperOrderDetailScreen>
               if (mounted) {
                 _currentPosition ??= await getCurrentLocation(context);
                 Map<String, String> body1 = {
-                  "token": Configs.login?.token ?? '',
                   "lat": _currentPosition?.latitude.toString() ?? '',
                   "lon": _currentPosition?.longitude.toString() ?? '',
                 };
                 if (mounted) {
                   await _netUtil.get("shipper_update_gps", body1, context);
                 }
-                Map<String, String> body = {
-                  "token": Configs.login?.token ?? '',
-                  "order_id": order?.id ?? ''
-                };
+                Map<String, String> body = {"order_id": order?.id ?? ''};
                 if (mounted) {
                   final rs = await _netUtil.get("ship_complete", body, context);
                   await EasyLoading.dismiss();
@@ -643,7 +639,7 @@ class _ShipperOrderDetailScreenState extends State<ShipperOrderDetailScreen>
                       return const ShipperPage(
                         status: 3,
                       );
-                    }), (Route<dynamic> route) => false);
+                    }), ModalRoute.withName('/home'));
                   }
                 }
               }
@@ -654,7 +650,6 @@ class _ShipperOrderDetailScreenState extends State<ShipperOrderDetailScreen>
 
   void guiTinNhan() {
     Map<String, String> body = {
-      "token": Configs.login?.token ?? '',
       "order_id": order?.id ?? '',
       "content": txtChat.text
     };
