@@ -442,14 +442,19 @@ class NetworkUtil {
       "limit": pageLength.toString(),
       "offset": (pageLength * page).toString(),
     };
-    final result =
-        await get(Configs.getNotificationUrl[Configs.userGroup], body, context);
-    if (result != null) {
-      newData = (result)
-          .map<TiemNotification>((item) => TiemNotification.fromJson(item))
-          .toList();
+    try {
+      final result = await get(
+          Configs.getNotificationUrl[Configs.userGroup], body, context);
+      if (result != null) {
+        newData = (result)
+            .map<TiemNotification>((item) => TiemNotification.fromJson(item))
+            .toList();
+      }
+      return newData;
+    } catch (e) {
+      print(e);
+      return [];
     }
-    return newData;
   }
 
   Future<SearchResult?> searchAll({

@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:gap/gap.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:hkd/anmition/fadeanimation.dart';
 import 'package:hkd/shipper/shipper_home_page.dart';
@@ -13,6 +15,7 @@ import 'package:hkd/widgets/custom_searchbar.dart';
 import 'package:hkd/widgets/custom_textfield.dart';
 import 'package:path/path.dart';
 import 'package:http/http.dart' as http;
+import 'package:webview_flutter/webview_flutter.dart';
 
 class ShipperRegisterScreen extends StatefulWidget {
   const ShipperRegisterScreen({Key? key}) : super(key: key);
@@ -22,6 +25,8 @@ class ShipperRegisterScreen extends StatefulWidget {
 }
 
 class _ShipperRegisterScreenState extends State<ShipperRegisterScreen> {
+  WebViewController? _controller;
+  bool _checkedTerm = false;
   final formKey = GlobalKey<FormState>();
   final networkUtil = NetworkUtil();
   // Position? _currentPosition;
@@ -33,6 +38,21 @@ class _ShipperRegisterScreenState extends State<ShipperRegisterScreen> {
   File? cccd;
   bool _isLoading = false;
   String? validatePassword;
+
+  @override
+  void initState() {
+    _loadHtml();
+    super.initState();
+  }
+
+  _loadHtml() async {
+    _controller = WebViewController();
+
+    final htmlString =
+        await rootBundle.loadString('assets/json/buyer_term.html');
+    _controller?.loadHtmlString(htmlString);
+  }
+
   Future<void> _submit(BuildContext context) async {
     FocusScope.of(context).unfocus();
     final form = formKey.currentState;
@@ -40,6 +60,11 @@ class _ShipperRegisterScreenState extends State<ShipperRegisterScreen> {
       form?.save();
       if (validatePassword != _model.xeomPassword) {
         Fluttertoast.showToast(msg: "Mật khẩu không đúng.");
+        return;
+      }
+      if (!_checkedTerm) {
+        Fluttertoast.showToast(msg: 'Bạn cần chấp nhận điều khoản sử dụng');
+        return;
       }
       if (license == null) {
         Fluttertoast.showToast(msg: "Thiếu bằng lái xe.");
@@ -299,30 +324,35 @@ class _ShipperRegisterScreenState extends State<ShipperRegisterScreen> {
                     headerText: 'Ảnh cá nhân',
                     pickedFile: (file) {
                       personalPhoto = file;
+                      setState(() {});
                     },
                   ),
                   _PickFileWidget(
                     headerText: 'Chứng minh thư/CCCD (2 mặt)',
                     pickedFile: (file) {
                       cccd = file;
+                      setState(() {});
                     },
                   ),
                   _PickFileWidget(
                     headerText: 'Bằng lái xe (2 mặt)',
                     pickedFile: (file) {
                       license = file;
+                      setState(() {});
                     },
                   ),
                   _PickFileWidget(
                     headerText: 'Giấy đăng ký xe (2 mặt)',
                     pickedFile: (file) {
                       motorReg = file;
+                      setState(() {});
                     },
                   ),
                   _PickFileWidget(
                     headerText: 'Bảo hiểm xe máy',
                     pickedFile: (file) {
                       warranty = file;
+                      setState(() {});
                     },
                   ),
                   const SizedBox(
@@ -355,6 +385,63 @@ class _ShipperRegisterScreenState extends State<ShipperRegisterScreen> {
                     keyboardType: TextInputType.phone,
                     hintText: 'Nhập số điện thoại',
                   ),
+                  const Gap(
+                    20,
+                  ),
+                  Row(
+                    children: [
+                      Transform.scale(
+                        scale: 1.2,
+                        child: Checkbox(
+                            value: _checkedTerm,
+                            onChanged: (value) {
+                              _checkedTerm = value ?? false;
+                              setState(() {});
+                            }),
+                      ),
+                      Expanded(
+                        child: TextButton(
+                          onPressed: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  if (_controller == null) {
+                                    return const SizedBox();
+                                  }
+                                  return Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        vertical: 50, horizontal: 24),
+                                    clipBehavior: Clip.hardEdge,
+                                    decoration: const BoxDecoration(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(
+                                          15.0,
+                                        ),
+                                      ),
+                                    ),
+                                    child:
+                                        WebViewWidget(controller: _controller!),
+                                  );
+                                });
+                          },
+                          child: Text.rich(TextSpan(
+                              text:
+                                  'Khi nhấn vào nút Xác nhận đăng ký có nghĩa là bạn đã đồng ý với ',
+                              style: Styles.textStyle,
+                              children: [
+                                TextSpan(
+                                  text: 'Điều khoản sử dụng',
+                                  style: Styles.textStyle
+                                      .copyWith(color: Styles.primaryColor3),
+                                )
+                              ])),
+                        ),
+                      )
+                    ],
+                  ),
+                  const Gap(
+                    8,
+                  ),
                 ],
               ),
             )),
@@ -370,7 +457,7 @@ class _ShipperRegisterScreenState extends State<ShipperRegisterScreen> {
               )
             : GFButton(
                 onPressed: () => _submit(context),
-                padding: const EdgeInsets.all(16),
+                // padding: const EdgeInsets.all(16),
                 borderShape: RoundedRectangleBorder(
                   // side: const BorderSide(width: 1, color: Color(0xFF1076D0)),
                   borderRadius: BorderRadius.circular(6),

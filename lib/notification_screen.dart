@@ -47,7 +47,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     setState(() {});
   }
 
-  loadUnreadNoti() async {
+  Future loadUnreadNoti() async {
     newsCount = await _netUtil.getUnreadNoti(context);
     setState(() {});
   }
@@ -122,11 +122,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                 // if (item.status2 != "0") {
                                 try {
                                   if (context.mounted) {
-                                    Future.wait([
-                                      _netUtil.dismissNotification(
-                                          item.id.toString(), context),
-                                      _netUtil.getUnreadNoti(context)
-                                    ]);
+                                    await _netUtil.dismissNotification(
+                                        item.id.toString(), context);
+                                    await loadUnreadNoti();
                                   }
                                 } catch (e) {
                                   debugPrint(e.toString());

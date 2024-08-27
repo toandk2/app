@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:hkd/trade/confirm_screen.dart';
 import 'package:hkd/ultils/func.dart';
@@ -28,6 +29,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     {'type': '0', 'text': 'Thanh toán khi nhận hàng'},
     {'type': '1', 'text': 'Chuyển khoản ngay'},
   ];
+  bool distanceToofar = false;
   double _totalProductCost = 0;
   AddressModel? addressBuyerModel;
   AddressModel? addressShopModel;
@@ -37,6 +39,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   final _timeTo = TextEditingController();
   final _timeSlot = TextEditingController();
   final _addressNumberCtrl = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -77,8 +80,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   _getShopAddress() async {
-    final result = await _networkUtil.get('thx_by_location',
-        {'lat': widget.model.lat1 ?? '', 'lon': widget.model.lon1 ?? ''}, context);
+    final result = await _networkUtil.get(
+        'thx_by_location',
+        {'lat': widget.model.lat1 ?? '', 'lon': widget.model.lon1 ?? ''},
+        context);
     if (result != null && result['kq'] == 1) {
       addressShopModel = AddressModel.fromJson(result['xa']);
     }
@@ -86,8 +91,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   _getBuyerAddress() async {
     List<AddressModel> addresses = [];
-    final result = await _networkUtil
-        .get('get_buyer_address', {'token': Configs.login?.token ?? ''}, context);
+    final result = await _networkUtil.get(
+        'get_buyer_address', {'token': Configs.login?.token ?? ''}, context);
     if (result != null && result is List) {
       for (var i = 0; i < result.length; i++) {
         final stringAddressSplited =
@@ -115,6 +120,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     _timeTo.dispose();
     _timeSlot.dispose();
     _addressNumberCtrl.dispose();
+    widget.model.shippingCost = 0;
     super.dispose();
   }
 
@@ -197,13 +203,39 @@ class _PaymentScreenState extends State<PaymentScreen> {
             LocationSearchbar(
               initData: initAddressesBuyer,
               getInitPosition: false,
+              onClear: () {
+                addressBuyerModel = null;
+                widget.model.shippingCost = 0;
+                distanceToofar = false;
+                setState(() {});
+              },
               onSelected: (model) async {
+                distanceToofar = false;
+                setState(() {});
                 addressBuyerModel = model;
-                _addressNumberCtrl.text = addressBuyerModel?.diachi ?? '';
-                await _calculateShipCost();
+                try {
+                  final distance = Geolocator.distanceBetween(
+                      double.parse(addressBuyerModel!.lat!),
+                      double.parse(addressBuyerModel!.lon!),
+                      double.parse(addressShopModel!.lat!),
+                      double.parse(addressShopModel!.lon!));
+                  if (distance > 50000) {
+                    distanceToofar = true;
+                    widget.model.shippingCost = 0;
+                    setState(() {});
+                  } else {
+                    _addressNumberCtrl.text = addressBuyerModel?.diachi ?? '';
+                    await _calculateShipCost();
+                  }
+                } catch (e) {}
               },
             ),
-            const Gap(20),
+            const Gap(6),
+            if (distanceToofar)
+              const Text(
+                  'Khoảng cách vận chuyển quá lớn, bạn cần tham khảo phí vận chuyển với Người bán',
+                  style: Styles.subtitle1Style),
+            const Gap(14),
             const Text('Địa chỉ nhận hàng', style: Styles.textStyle),
             const Gap(8),
             CustomTextfield(
@@ -356,7 +388,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   final result = await _networkUtil.post(
                       'checkout', widget.model.toJson(), context);
                   if (result != null && result['success'] > 0) {
-                    await _networkUtil.deleteCartOnline(widget.model.shopId, context);
+                    await _networkUtil.deleteCartOnline(
+                        widget.model.shopId, context);
                     Fluttertoast.showToast(
                         msg: 'Đơn hàng đã được gửi thành công');
 

@@ -10,6 +10,7 @@ import 'package:hkd/anmition/fadeanimation.dart';
 import 'package:hkd/ultils/func.dart';
 import 'package:hkd/ultils/models.dart';
 import 'package:hkd/ultils/styles.dart';
+import 'package:hkd/user/login_screen.dart';
 import 'package:hkd/widgets/appbar.dart';
 import 'package:hkd/widgets/custom_searchbar.dart';
 import 'package:hkd/widgets/custom_textfield.dart';
@@ -105,6 +106,68 @@ class _ProfileScreenState extends State<ProfileScreen> {
       addresses.addAll(newAddress);
     }
     return addresses;
+  }
+
+  _updateProfile() async {
+    final form = formKey.currentState;
+    if (form?.validate() == true) {
+      form?.save();
+      if (_user == null) return;
+      if (avatar == null) {
+        Fluttertoast.showToast(msg: "Thiếu ảnh nhận diện.");
+        return;
+      }
+      setState(() => _isLoading = true);
+      List<http.MultipartFile> files = [
+        await http.MultipartFile.fromPath('avatar', avatar!.path),
+      ];
+      Map<String, String> body = _user!.toJson();
+      body.remove('user_name');
+      body.remove('link_img');
+      if (Configs.userGroup == 0) {
+        body.remove('admin_name');
+        body.remove('quote');
+        for (var i = 0; i < initBuyerAddresses.length; i++) {
+          final address = initBuyerAddresses[i];
+          body.addAll(address.toAddressStringJson(i + 1));
+        }
+      }
+      if (Configs.userGroup == 1) {
+        body['shop_id'] = Configs.login?.shopId ?? '';
+        // body['admin_id'] = Configs.user. ?? '';
+      }
+      try {
+        final result = await _networkUtil.multipartPost(
+            updateInfoUrl[Configs.userGroup], body, files, context);
+        setState(() => _isLoading = false);
+
+        if (result['success'] == 1) {
+          await _networkUtil.getProfileInfo(context);
+          Fluttertoast.showToast(msg: 'Cập nhật thông tin thành công.');
+        } else {
+          Fluttertoast.showToast(msg: 'Cập nhật thông tin không thành công.');
+        }
+      } catch (e) {
+        debugPrint(e.toString());
+        setState(() => _isLoading = false);
+        Fluttertoast.showToast(msg: 'Cập nhật thông tin không thành công.');
+      }
+      setState(() => _isLoading = false);
+    }
+  }
+
+  _disableAccount() async {
+    final result = await _networkUtil.post('disable_account', {}, context);
+    if (result != null && result['success'] == 1) {
+      Fluttertoast.showToast(msg: 'Vô hiệu hoá tài khoản thành công.');
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (_) => const LoginScreen(),
+          ),
+          ModalRoute.withName('/home'));
+    } else {
+      Fluttertoast.showToast(msg: 'Vô hiệu hoá tài khoản không thành công.');
+    }
   }
 
   @override
@@ -331,7 +394,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.only(bottom: 24, left: 16, right: 16, top: 8),
         child: _isLoading
             ? const Center(
                 child: CircularProgressIndicator(
@@ -339,72 +402,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     valueColor:
                         AlwaysStoppedAnimation<Color>(Styles.primaryColor3)),
               )
-            : GFButton(
-                onPressed: () async {
-                  final form = formKey.currentState;
-                  if (form?.validate() == true) {
-                    form?.save();
-                    if (_user == null) return;
-                    if (avatar == null) {
-                      Fluttertoast.showToast(msg: "Thiếu ảnh nhận diện.");
-                      return;
-                    }
-                    setState(() => _isLoading = true);
-                    List<http.MultipartFile> files = [
-                      await http.MultipartFile.fromPath('avatar', avatar!.path),
-                    ];
-                    Map<String, String> body = _user!.toJson();
-                    body.remove('user_name');
-                    body.remove('link_img');
-                    if (Configs.userGroup == 0) {
-                      body.remove('admin_name');
-                      body.remove('quote');
-                      for (var i = 0; i < initBuyerAddresses.length; i++) {
-                        final address = initBuyerAddresses[i];
-                        body.addAll(address.toAddressStringJson(i + 1));
-                      }
-                    }
-                    if (Configs.userGroup == 1) {
-                      body['shop_id'] = Configs.login?.shopId ?? '';
-                      // body['admin_id'] = Configs.user. ?? '';
-                    }
-                    try {
-                      final result = await _networkUtil.multipartPost(
-                          updateInfoUrl[Configs.userGroup], body, files,context);
-                      setState(() => _isLoading = false);
-
-                      if (result['success'] == 1) {
-                        await _networkUtil.getProfileInfo(context);
-                        Fluttertoast.showToast(
-                            msg: 'Cập nhật thông tin thành công.');
-                      } else {
-                        Fluttertoast.showToast(
-                            msg: 'Cập nhật thông tin không thành công.');
-                      }
-                    } catch (e) {
-                      debugPrint(e.toString());
-                      setState(() => _isLoading = false);
-                      Fluttertoast.showToast(
-                          msg: 'Cập nhật thông tin không thành công.');
-                    }
-                    setState(() => _isLoading = false);
-                  }
-                },
-                padding: const EdgeInsets.all(16),
-                borderShape: RoundedRectangleBorder(
-                  // side: const BorderSide(width: 1, color: Color(0xFF1076D0)),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                size: 48,
-                color: Styles.primaryColor3,
-                type: GFButtonType.solid,
-                text: 'Xác nhận thay đổi',
-                // textColor: Colors.white,
-                textStyle: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GFButton(
+                    onPressed: _updateProfile,
+                    // padding: const EdgeInsets.all(16),
+                    borderShape: RoundedRectangleBorder(
+                      // side: const BorderSide(width: 1, color: Color(0xFF1076D0)),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    size: 48,
+                    fullWidthButton: true,
+                    color: Styles.primaryColor3,
+                    type: GFButtonType.solid,
+                    text: 'Xác nhận thay đổi',
+                    // textColor: Colors.white,
+                    textStyle: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const Gap(6),
+                  GFButton(
+                    onPressed: _disableAccount,
+                    // padding: const EdgeInsets.all(16),
+                    borderShape: RoundedRectangleBorder(
+                      // side: const BorderSide(width: 1, color: Color(0xFF1076D0)),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    size: 48,
+                    color: Styles.moneyColor,
+                    type: GFButtonType.solid,
+                    text: 'Vô hiệu hoá tài khoản',
+                    // textColor: Colors.white,
+                    fullWidthButton: true,
+                    textStyle: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ),
       ),
     );

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:gap/gap.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:hkd/anmition/fadeanimation.dart';
 import 'package:hkd/shop/shop_home_page.dart';
@@ -9,6 +11,7 @@ import 'package:hkd/ultils/styles.dart';
 import 'package:hkd/widgets/appbar.dart';
 import 'package:hkd/widgets/custom_searchbar.dart';
 import 'package:hkd/widgets/custom_textfield.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class BuyerRegisterScreen extends StatefulWidget {
   const BuyerRegisterScreen({Key? key}) : super(key: key);
@@ -23,14 +26,37 @@ class _BuyerRegisterScreenState extends State<BuyerRegisterScreen> {
   String? placeName;
   final buyerModel = BuyerRegisterModel();
   bool _isLoading = false;
+  WebViewController? _controller;
+  bool _checkedTerm = false;
   String? validatePassword;
+
+  @override
+  void initState() {
+    _loadHtml();
+    super.initState();
+  }
+
+  _loadHtml() async {
+    _controller = WebViewController();
+
+    final htmlString =
+        await rootBundle.loadString('assets/json/buyer_term.html');
+    _controller?.loadHtmlString(htmlString);
+  }
+
   Future<void> _submit() async {
     FocusScope.of(context).unfocus();
+
     final form = formKey.currentState;
     if (form?.validate() == true) {
       form?.save();
       if (validatePassword != buyerModel.password) {
         Fluttertoast.showToast(msg: "Mật khẩu không đúng.");
+        return;
+      }
+      if (!_checkedTerm) {
+        Fluttertoast.showToast(msg: 'Bạn cần chấp nhận điều khoản sử dụng');
+        return;
       }
       setState(() => _isLoading = true);
       buyerModel.deviceType = 'mobile';
@@ -82,8 +108,8 @@ class _BuyerRegisterScreenState extends State<BuyerRegisterScreen> {
                       style: Styles.headline1Style,
                     ),
                   ),
-                  const SizedBox(
-                    height: 12,
+                  const Gap(
+                    12,
                   ),
                   const FadeAnimation(
                     delay: 1,
@@ -92,8 +118,8 @@ class _BuyerRegisterScreenState extends State<BuyerRegisterScreen> {
                       style: Styles.textStyle,
                     ),
                   ),
-                  const SizedBox(
-                    height: 12,
+                  const Gap(
+                    12,
                   ),
                   const FadeAnimation(
                     delay: 1,
@@ -102,12 +128,12 @@ class _BuyerRegisterScreenState extends State<BuyerRegisterScreen> {
                       style: Styles.headline3Style,
                     ),
                   ),
-                  const SizedBox(
-                    height: 20,
+                  const Gap(
+                    20,
                   ),
                   const Text('Họ và tên', style: Styles.textStyle),
-                  const SizedBox(
-                    height: 8,
+                  const Gap(
+                    8,
                   ),
                   CustomTextfield(
                     onSaved: (val) {
@@ -120,26 +146,49 @@ class _BuyerRegisterScreenState extends State<BuyerRegisterScreen> {
                     },
                     hintText: 'Nhập họ và tên',
                   ),
-                  const SizedBox(
-                    height: 20,
+                  const Gap(
+                    20,
                   ),
-                  const Text('Địa chỉ', style: Styles.textStyle),
-                  const SizedBox(
-                    height: 8,
+                  const Text('Vị trí', style: Styles.textStyle),
+                  const Gap(
+                    8,
                   ),
                   LocationSearchbar(
                     onSelected: (model) {
                       buyerModel.lat = model.lat;
                       buyerModel.lon = model.lon;
-                      // buyerModel = '${model.tinh},${model.huyen},${model.xa}';
+                      buyerModel.location =
+                          '${model.tinh},${model.huyen},${model.xa}';
                     },
                   ),
-                  const SizedBox(
-                    height: 20,
+                  const Gap(
+                    20,
+                  ),
+                  const Text('Địa chỉ', style: Styles.textStyle),
+                  const Gap(
+                    8,
+                  ),
+                  CustomTextfield(
+                    // textCtrl: _textCtrl,
+                    onChanged: (val) {
+                      buyerModel.address = val;
+                    },
+                    // onSaved: (val) {
+                    //   widget.updateDiachi(val ?? '');
+                    // },
+                    validator: (val) {
+                      return val?.isNotEmpty != true
+                          ? "Địa chỉ không để trống"
+                          : null;
+                    },
+                    hintText: 'Nhập địa chỉ',
+                  ),
+                  const Gap(
+                    20,
                   ),
                   const Text('Số điện thoại', style: Styles.textStyle),
-                  const SizedBox(
-                    height: 8,
+                  const Gap(
+                    8,
                   ),
                   CustomTextfield(
                     onSaved: (val) {
@@ -156,12 +205,12 @@ class _BuyerRegisterScreenState extends State<BuyerRegisterScreen> {
                     },
                     hintText: 'Nhập số điện thoại',
                   ),
-                  const SizedBox(
-                    height: 20,
+                  const Gap(
+                    20,
                   ),
                   const Text('Mật khẩu', style: Styles.textStyle),
-                  const SizedBox(
-                    height: 8,
+                  const Gap(
+                    8,
                   ),
                   CustomTextfield(
                     onSaved: (val) {
@@ -175,12 +224,12 @@ class _BuyerRegisterScreenState extends State<BuyerRegisterScreen> {
                     obscureText: true,
                     hintText: 'Nhập mật khẩu',
                   ),
-                  const SizedBox(
-                    height: 20,
+                  const Gap(
+                    20,
                   ),
                   const Text('Nhập lại mật khẩu', style: Styles.textStyle),
-                  const SizedBox(
-                    height: 8,
+                  const Gap(
+                    8,
                   ),
                   CustomTextfield(
                     onSaved: (val) => validatePassword = val,
@@ -191,6 +240,63 @@ class _BuyerRegisterScreenState extends State<BuyerRegisterScreen> {
                     },
                     obscureText: true,
                     hintText: 'Nhập lại mật khẩu',
+                  ),
+                  const Gap(
+                    20,
+                  ),
+                  Row(
+                    children: [
+                      Transform.scale(
+                        scale: 1.2,
+                        child: Checkbox(
+                            value: _checkedTerm,
+                            onChanged: (value) {
+                              _checkedTerm = value ?? false;
+                              setState(() {});
+                            }),
+                      ),
+                      Expanded(
+                        child: TextButton(
+                          onPressed: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  if (_controller == null) {
+                                    return const SizedBox();
+                                  }
+                                  return Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        vertical: 50, horizontal: 24),
+                                    clipBehavior: Clip.hardEdge,
+                                    decoration: const BoxDecoration(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(
+                                          15.0,
+                                        ),
+                                      ),
+                                    ),
+                                    child:
+                                        WebViewWidget(controller: _controller!),
+                                  );
+                                });
+                          },
+                          child: Text.rich(TextSpan(
+                              text:
+                                  'Khi nhấn vào nút Xác nhận đăng ký có nghĩa là bạn đã đồng ý với ',
+                              style: Styles.textStyle,
+                              children: [
+                                TextSpan(
+                                  text: 'Điều khoản sử dụng',
+                                  style: Styles.textStyle
+                                      .copyWith(color: Styles.primaryColor3),
+                                )
+                              ])),
+                        ),
+                      )
+                    ],
+                  ),
+                  const Gap(
+                    8,
                   ),
                 ],
               ),
@@ -207,7 +313,7 @@ class _BuyerRegisterScreenState extends State<BuyerRegisterScreen> {
               )
             : GFButton(
                 onPressed: _submit,
-                padding: const EdgeInsets.all(16),
+                // padding: const EdgeInsets.all(16),
                 borderShape: RoundedRectangleBorder(
                   // side: const BorderSide(width: 1, color: Color(0xFF1076D0)),
                   borderRadius: BorderRadius.circular(6),

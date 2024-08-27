@@ -312,7 +312,7 @@ class _MyDrawerState extends State<MyDrawer> {
                                   child: Container(
                                     clipBehavior: Clip.antiAlias,
                                     decoration: const ShapeDecoration(
-                                      color: Colors.black,
+                                      color: Styles.textColor,
                                       shape: OvalBorder(),
                                     ),
                                     height: 20,
@@ -361,8 +361,9 @@ class _MyDrawerState extends State<MyDrawer> {
                                         const Gap(4),
                                         Text(
                                           '${Configs.selectType[_firstProfile?.type ?? 0]?['text'] ?? ''} - ${_firstProfile?.id ?? ''}',
-                                          style: Styles.headline4Style
-                                              .copyWith(color: Colors.black),
+                                          style: Styles.headline4Style.copyWith(
+                                              color: Styles.textColor,
+                                              fontSize: 13),
                                         )
                                       ]),
                                 ),
@@ -517,6 +518,7 @@ class _MyDrawerState extends State<MyDrawer> {
                         DrawerButton(
                           icon: 'assets/icons/drawer/cart.png',
                           text: 'Tìm kiếm sản phẩm',
+                          isBold: Configs.userGroup == 0,
                           onTap: () {
                             // if (Configs.userGroup != 0) return;
                             Navigator.of(context).pushAndRemoveUntil(
@@ -541,11 +543,13 @@ class _MyDrawerState extends State<MyDrawer> {
                         DrawerButton(
                           icon: 'assets/icons/drawer/box.png',
                           text: 'Tìm kiếm nhà cung cấp',
+                          isBold: Configs.userGroup == 1,
                           onTap: () => _findNpp(),
                         ),
                         DrawerButton(
                           icon: 'assets/icons/drawer/bill.png',
                           text: 'Xem đơn nhập dự kiến',
+                          isBold: Configs.userGroup == 1,
                           onTap: () {
                             if (Configs.userGroup != 1) {
                               Fluttertoast.showToast(
@@ -565,6 +569,7 @@ class _MyDrawerState extends State<MyDrawer> {
                           DrawerButton(
                             icon: 'assets/icons/drawer/bike.png',
                             text: 'Tìm người vận chuyển',
+                            isBold: Configs.userGroup == 1,
                             onTap: () {
                               if (Configs.userGroup != 1) return;
                               Navigator.of(widget.parentContext)
@@ -589,6 +594,7 @@ class _MyDrawerState extends State<MyDrawer> {
                         DrawerButton(
                           icon: 'assets/icons/drawer/bill.png',
                           text: 'Xem đơn cần chuyển',
+                          isBold: Configs.userGroup == 3,
                           onTap: () {
                             if (Configs.userGroup != 3) {
                               Fluttertoast.showToast(
@@ -613,6 +619,7 @@ class _MyDrawerState extends State<MyDrawer> {
                       DrawerButton(
                         icon: 'assets/icons/drawer/lock.png',
                         text: 'Thay đổi mật khẩu',
+                        isBold: true,
                         onTap: () {
                           Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(builder: (_) {
@@ -626,6 +633,7 @@ class _MyDrawerState extends State<MyDrawer> {
                       DrawerButton(
                         icon: 'assets/icons/drawer/bell.png',
                         text: 'Thông báo',
+                        isBold: true,
                         suffixIcon: StreamBuilder<int>(
                             stream: Configs.unreadMessage,
                             builder: (context, snapshot) {
@@ -699,7 +707,7 @@ class _MyDrawerState extends State<MyDrawer> {
                                   Configs.userGroup == 1
                                       ? 'hokinhdoanh.\nonline'
                                       : 'dothi\nthongminh1',
-                                  style: Styles.headline3Style,
+                                  style: Styles.headline4Style,
                                 ),
                               ],
                             ),
@@ -725,16 +733,18 @@ class _MyDrawerState extends State<MyDrawer> {
 }
 
 class DrawerButton extends StatelessWidget {
-  const DrawerButton(
-      {Key? key,
-      required this.icon,
-      required this.text,
-      required this.onTap,
-      this.suffixIcon})
-      : super(key: key);
+  const DrawerButton({
+    Key? key,
+    required this.icon,
+    required this.text,
+    required this.onTap,
+    this.suffixIcon,
+    this.isBold = false,
+  }) : super(key: key);
   final String icon;
   final String text;
   final Function onTap;
+  final bool isBold;
   final Widget? suffixIcon;
   @override
   Widget build(BuildContext context) {
@@ -771,7 +781,9 @@ class DrawerButton extends StatelessWidget {
             Expanded(
               child: Text(
                 text,
-                style: Styles.headline3Style,
+                style: Styles.headline3Style.copyWith(
+                    color: isBold ? Styles.textColor : Styles.fieldTextColor,
+                    fontSize: 15),
               ),
             ),
             suffixIcon ?? const SizedBox()

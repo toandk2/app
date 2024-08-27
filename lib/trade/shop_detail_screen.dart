@@ -227,13 +227,15 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
     if (Configs.userGroup != 0) {
       Fluttertoast.showToast(
           msg:
-              'Bạn cần chuyển sang chế độ Người tìm mua để có thể thực hiện chức năng này');
+              'Bạn cần chuyển sang chế độ Người tìm mua để có thể thực hiện chức năng này',
+          timeInSecForIosWeb: 5,toastLength: Toast.LENGTH_LONG);
       return;
     }
     if (widget.isShopBuying && Configs.user?.shopId == "0") {
       Fluttertoast.showToast(
           msg:
-              'Bạn cần đăng nhập vào tài khoản Hộ kinh doanh với chế độ tìm mua để có thể thực hiện chức năng này');
+              'Bạn cần đăng nhập vào tài khoản Hộ kinh doanh với chế độ tìm mua để có thể thực hiện chức năng này',
+          timeInSecForIosWeb: 5,toastLength: Toast.LENGTH_LONG);
       return;
     }
     final isNewCart = _checkoutModel.data.isEmpty;

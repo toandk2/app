@@ -21,13 +21,15 @@ class CustomSearchBar<T> extends StatefulWidget {
       this.timeOutSearch = 1,
       this.waitTextSearch = 2,
       this.showDialog = true,
-      this.initialValue})
+      this.initialValue,
+      this.onClear})
       : super(key: key);
   final Function(T value) onSelected;
   final FutureOr<List<T>> Function(String? value) onChanged;
   final List<T> Function()? onTap;
   final bool readOnly;
   final String Function(T value) text;
+  final void Function()? onClear;
   final TextStyle? style;
   final Widget? suffixIcon;
   final String? hintText;
@@ -162,6 +164,7 @@ class _CustomSearchBarState<T> extends State<CustomSearchBar<T>> {
             // behavior: HitTestBehavior.translucent,
             onTap: () {
               _textCtrl.text = '';
+              widget.onClear?.call();
               setState(() {});
             },
             child: const Icon(Icons.close));
@@ -246,8 +249,10 @@ class LocationSearchbar extends StatefulWidget {
       required this.onSelected,
       this.initValue,
       this.getInitPosition = true,
-      this.initData = const []});
+      this.initData = const [],
+      this.onClear});
   final Function(AddressModel) onSelected;
+  final Function()? onClear;
   final String? initValue;
   final List<AddressModel> initData;
   final bool getInitPosition;
@@ -277,10 +282,13 @@ class _LocationSearchbarState extends State<LocationSearchbar> {
   _getIntialAddress() async {
     final position = await getCurrentLocation(context);
 
-    final result = await _networkUtil.get('thx_by_location', {
-      'lat': position.latitude.toString(),
-      'lon': position.longitude.toString()
-    },context);
+    final result = await _networkUtil.get(
+        'thx_by_location',
+        {
+          'lat': position.latitude.toString(),
+          'lon': position.longitude.toString()
+        },
+        context);
     if (result != null && result['kq'] == 1) {
       addressModel = AddressModel.fromJson(result['xa']);
       widget.onSelected(addressModel!);
@@ -293,7 +301,8 @@ class _LocationSearchbarState extends State<LocationSearchbar> {
   FutureOr<List<AddressModel>> _getAddress(String? data) async {
     if (data == null) return [];
     List<AddressModel> addressModels = [];
-    final value = await _networkUtil.get('search_address', {'keyword': data},context);
+    final value =
+        await _networkUtil.get('search_address', {'keyword': data}, context);
     if (value != null) {
       addressModels = AddressModel.fromListJson(value);
     }
@@ -325,11 +334,17 @@ class _LocationSearchbarState extends State<LocationSearchbar> {
       text: (value) {
         return '${value.tinh},${value.huyen},${value.xa}';
       },
-      onChanged: _getAddress,
+      onChanged: (value) {
+        widget.onClear?.call();
+        return _getAddress(value);
+      },
       readOnly: false,
       waitTextSearch: initData.isNotEmpty ? 0 : 2,
       hintText: 'Tỉnh Thành phố, Phường xã, Quận huyện',
       onTap: initData.isNotEmpty ? () => initData : null,
+      onClear: () {
+        widget.onClear?.call();
+      },
       onSelected: (item) {
         addressModel = item;
         widget.onSelected(addressModel!);

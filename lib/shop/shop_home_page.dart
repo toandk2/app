@@ -270,7 +270,7 @@ class _ShopPageState extends State<ShopPage> with TickerProviderStateMixin {
                                     ),
                                     const Gap(4),
                                     Text(
-                                      'hkdo.vn/${Configs.login?.shopId}',
+                                      'dothithongminh1.vn/${Configs.login?.shopId}',
                                       style: Styles.textStyle.copyWith(
                                         color: Colors.blue,
                                         decoration: TextDecoration.underline,

@@ -71,7 +71,7 @@ class Login {
     success = json['success'];
     token = json['token'];
     userId = json['user_id'];
-    buyerId = json['buyer_id'];
+    buyerId = json['buyer_id'].toString();
     buyerName = json['buyer_name'];
     shopId = json['shop_id'];
     shopName = json['shop_name'];
@@ -1359,6 +1359,8 @@ class BuyerRegisterModel {
   String? deviceId;
   String? lat;
   String? lon;
+  String? location;
+  String? address;
 
   BuyerRegisterModel(
       {this.name,
@@ -1367,7 +1369,9 @@ class BuyerRegisterModel {
       this.deviceType,
       this.deviceId,
       this.lat,
-      this.lon});
+      this.lon,
+      this.location,
+      this.address});
 
   BuyerRegisterModel.fromJson(Map<String, dynamic> json) {
     name = json['name'];
@@ -1377,6 +1381,8 @@ class BuyerRegisterModel {
     deviceId = json['device_id'];
     lat = json['lat'];
     lon = json['lon'];
+    location = json['location'];
+    address = json['address'];
   }
 
   Map<String, dynamic> toJson() {
@@ -1388,6 +1394,8 @@ class BuyerRegisterModel {
     data['device_id'] = deviceId;
     data['lat'] = lat;
     data['lon'] = lon;
+    data['location'] = location;
+    data['address'] = address;
     return data;
   }
 }
