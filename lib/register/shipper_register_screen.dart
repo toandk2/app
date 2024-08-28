@@ -49,7 +49,7 @@ class _ShipperRegisterScreenState extends State<ShipperRegisterScreen> {
     _controller = WebViewController();
 
     final htmlString =
-        await rootBundle.loadString('assets/json/buyer_term.html');
+        await rootBundle.loadString('assets/json/shipper_term.html');
     _controller?.loadHtmlString(htmlString);
   }
 

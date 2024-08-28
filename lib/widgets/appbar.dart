@@ -121,14 +121,16 @@ class _MyDrawerState extends State<MyDrawer> {
   @override
   void initState() {
     if (Configs.login == null) return;
-    _netUtil.updateCartCount(context);
+    _netUtil.getUnreadNoti(widget.parentContext);
     if (Configs.userGroup == 3) {
       _firstProfile = SecondProfile(
-        id: '',
+        id: Configs.login?.userId ?? '',
         name: Configs.login?.name ?? '',
         type: 3,
       );
+      return;
     }
+    _netUtil.updateCartCount(widget.parentContext);
     if (Configs.userGroup == 0) {
       _firstProfile = SecondProfile(
         id: Configs.login?.buyerId ?? '',
@@ -409,7 +411,7 @@ class _MyDrawerState extends State<MyDrawer> {
                         ),
                         InkWell(
                             onTap: () async {
-                              await _netUtil.logout(context);
+                              await _netUtil.logout(widget.parentContext);
                             },
                             // child: Lottie.asset("assets/images/logout.json",
                             //     repeat: true,
