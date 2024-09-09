@@ -32,10 +32,13 @@ class _ShipperRegisterScreenState extends State<ShipperRegisterScreen> {
   // Position? _currentPosition;
   final ShipperRegisterModel _model = ShipperRegisterModel();
   File? license;
+  File? license_after;
   File? motorReg;
+  File? motor_reg_after;
   File? warranty;
   File? personalPhoto;
   File? cccd;
+  File? cmnd_after;
   bool _isLoading = false;
   String? validatePassword;
 
@@ -67,11 +70,19 @@ class _ShipperRegisterScreenState extends State<ShipperRegisterScreen> {
         return;
       }
       if (license == null) {
-        Fluttertoast.showToast(msg: "Thiếu bằng lái xe.");
+        Fluttertoast.showToast(msg: "Thiếu bằng lái xe mặt trước.");
+        return;
+      }
+      if (license_after == null) {
+        Fluttertoast.showToast(msg: "Thiếu bằng lái xe mặt sau.");
         return;
       }
       if (motorReg == null) {
-        Fluttertoast.showToast(msg: "Thiếu đăng ký xe.");
+        Fluttertoast.showToast(msg: "Thiếu đăng ký xe mặt trước.");
+        return;
+      }
+      if (motor_reg_after == null) {
+        Fluttertoast.showToast(msg: "Thiếu đăng ký xe mặt sau.");
         return;
       }
       if (warranty == null) {
@@ -79,7 +90,11 @@ class _ShipperRegisterScreenState extends State<ShipperRegisterScreen> {
         return;
       }
       if (cccd == null) {
-        Fluttertoast.showToast(msg: "Thiếu căn cước công dân.");
+        Fluttertoast.showToast(msg: "Thiếu căn cước công dân mặt trước.");
+        return;
+      }
+      if (cmnd_after == null) {
+        Fluttertoast.showToast(msg: "Thiếu căn cước công dân mặt sau.");
         return;
       }
       if (personalPhoto == null) {
@@ -94,6 +109,10 @@ class _ShipperRegisterScreenState extends State<ShipperRegisterScreen> {
         await http.MultipartFile.fromPath('motor_reg', motorReg!.path),
         await http.MultipartFile.fromPath('warranty', warranty!.path),
         await http.MultipartFile.fromPath('cccd', cccd!.path),
+        await http.MultipartFile.fromPath('cmnd_after', cmnd_after!.path),
+        await http.MultipartFile.fromPath('license_after', license_after!.path),
+        await http.MultipartFile.fromPath(
+            'motor_reg_after', motor_reg_after!.path),
         await http.MultipartFile.fromPath(
             'personal_photo', personalPhoto!.path),
       ];
@@ -320,36 +339,75 @@ class _ShipperRegisterScreenState extends State<ShipperRegisterScreen> {
                       style: Styles.headline3Style,
                     ),
                   ),
+                  const Gap(12),
+                  const Text('Ảnh cá nhân', style: Styles.textStyle),
+                  const Gap(8),
                   _PickFileWidget(
-                    headerText: 'Ảnh cá nhân',
                     pickedFile: (file) {
                       personalPhoto = file;
                       setState(() {});
                     },
                   ),
+                  const Gap(12),
+                  const Text('Chứng minh thư/CCCD (2 mặt)',
+                      style: Styles.textStyle),
+                  const Gap(8),
                   _PickFileWidget(
-                    headerText: 'Chứng minh thư/CCCD (2 mặt)',
+                    subText: 'Mặt trước',
                     pickedFile: (file) {
                       cccd = file;
                       setState(() {});
                     },
                   ),
+                  const Gap(8),
                   _PickFileWidget(
-                    headerText: 'Bằng lái xe (2 mặt)',
+                    subText: 'Mặt sau',
+                    pickedFile: (file) {
+                      cmnd_after = file;
+                      setState(() {});
+                    },
+                  ),
+                  const Gap(12),
+                  const Text('Bằng lái xe (2 mặt)', style: Styles.textStyle),
+                  const Gap(8),
+                  _PickFileWidget(
+                    subText: 'Mặt trước',
                     pickedFile: (file) {
                       license = file;
                       setState(() {});
                     },
                   ),
+                  const Gap(8),
                   _PickFileWidget(
-                    headerText: 'Giấy đăng ký xe (2 mặt)',
+                    subText: 'Mặt sau',
+                    pickedFile: (file) {
+                      license_after = file;
+                      setState(() {});
+                    },
+                  ),
+                  const Gap(12),
+                  const Text('Giấy đăng ký xe (2 mặt)',
+                      style: Styles.textStyle),
+                  const Gap(8),
+                  _PickFileWidget(
+                    subText: 'Mặt trước',
                     pickedFile: (file) {
                       motorReg = file;
                       setState(() {});
                     },
                   ),
+                  const Gap(8),
                   _PickFileWidget(
-                    headerText: 'Bảo hiểm xe máy',
+                    subText: 'Mặt sau',
+                    pickedFile: (file) {
+                      motor_reg_after = file;
+                      setState(() {});
+                    },
+                  ),
+                  const Gap(12),
+                  const Text('Bảo hiểm xe máy', style: Styles.textStyle),
+                  const Gap(8),
+                  _PickFileWidget(
                     pickedFile: (file) {
                       warranty = file;
                       setState(() {});
@@ -475,12 +533,12 @@ class _ShipperRegisterScreenState extends State<ShipperRegisterScreen> {
 }
 
 class _PickFileWidget extends StatefulWidget {
-  final String headerText;
+  final String? subText;
   final Function(File file) pickedFile;
   const _PickFileWidget({
     Key? key,
-    required this.headerText,
     required this.pickedFile,
+    this.subText,
   }) : super(key: key);
   @override
   State<_PickFileWidget> createState() => _PickFileWidgetState();
@@ -490,55 +548,43 @@ class _PickFileWidgetState extends State<_PickFileWidget> {
   File? file;
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
       children: [
-        const SizedBox(
-          height: 10,
-        ),
-        Text(widget.headerText, style: Styles.textStyle),
-        const SizedBox(
-          height: 8,
-        ),
-        Row(
-          children: [
-            GFButton(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              size: 40,
-              onPressed: () async {
-                final result =
-                    await FilePicker.platform.pickFiles(type: FileType.image);
+        Expanded(
+          flex: 3,
+          child: GFButton(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+            size: 40,
+            onPressed: () async {
+              final result =
+                  await FilePicker.platform.pickFiles(type: FileType.image);
 
-                if (result != null) {
-                  file = File(result.files.single.path!);
-                  widget.pickedFile.call(file!);
-                } else {
-                  // User canceled the picker
-                }
-              },
-              text: "Đính kèm file",
-              textStyle: Styles.textStyle.copyWith(
-                  color: Styles.primaryColor3, fontWeight: FontWeight.w600),
-              color: const Color(0xFFEBF2F8),
-            ),
-            const SizedBox(
-              width: 8,
-            ),
-            Expanded(
-              child: Text(
-                file == null
-                    ? 'Chưa có file được đính kèm'
-                    : basename(file!.path),
-                style: Styles.headline3Style.copyWith(
-                  fontWeight: FontWeight.w400,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ),
-          ],
+              if (result != null) {
+                file = File(result.files.single.path!);
+                widget.pickedFile.call(file!);
+              } else {
+                // User canceled the picker
+              }
+            },
+            text:
+                "Đính kèm file ${widget.subText != null ? "(${widget.subText})" : ''}",
+            textStyle: Styles.textStyle.copyWith(
+                color: Styles.primaryColor3, fontWeight: FontWeight.w600),
+            color: const Color(0xFFEBF2F8),
+          ),
         ),
         const SizedBox(
-          height: 10,
+          width: 8,
+        ),
+        Expanded(
+          flex: 2,
+          child: Text(
+            file == null ? 'Chưa có file được đính kèm' : basename(file!.path),
+            style: Styles.headline4Style.copyWith(
+              fontWeight: FontWeight.w400,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
         ),
       ],
     );

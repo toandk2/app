@@ -91,5 +91,13 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+   <!-- Khởi chạy từ web -->
+  <key>CFBundleURLName</key>
+  <string>com.example.dothithongminh.main</string> <!-- Tên nhận dạng của URL Scheme -->
+  <key>CFBundleURLSchemes</key>
+  <array>
+    <string>dothithongminh1</string> <!-- Tên của URL Scheme bạn muốn sử dụng -->
+  </array>
+ <!-- Khởi chạy từ web -->
 </dict>
 </plist>

@@ -555,8 +555,11 @@ class _MyDrawerState extends State<MyDrawer> {
                           onTap: () {
                             if (Configs.userGroup != 1) {
                               Fluttertoast.showToast(
-                                  msg:
-                                      'Bạn đang không đăng nhập với tư cách là hộ kinh doanh.\nVui lòng đăng nhập đúng đối tượng để thao tác');
+                                msg:
+                                    'Bạn đang không đăng nhập với tư cách là hộ kinh doanh.\nVui lòng đăng nhập đúng đối tượng để thao tác',
+                                timeInSecForIosWeb: 5,
+                                toastLength: Toast.LENGTH_LONG,
+                              );
                               return;
                             }
                             Navigator.of(context).pushAndRemoveUntil(
@@ -600,8 +603,11 @@ class _MyDrawerState extends State<MyDrawer> {
                           onTap: () {
                             if (Configs.userGroup != 3) {
                               Fluttertoast.showToast(
-                                  msg:
-                                      'Bạn đang không đăng nhập với tư cách là người vận chuyển.\nVui lòng đăng nhập đúng đối tượng để thao tác');
+                                msg:
+                                    'Bạn đang không đăng nhập với tư cách là người vận chuyển.\nVui lòng đăng nhập đúng đối tượng để thao tác',
+                                timeInSecForIosWeb: 5,
+                                toastLength: Toast.LENGTH_LONG,
+                              );
                               return;
                             }
                             Navigator.of(context).pushAndRemoveUntil(
