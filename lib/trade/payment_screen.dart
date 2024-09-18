@@ -14,6 +14,9 @@ import 'package:hkd/widgets/custom_dropdown.dart';
 import 'package:hkd/widgets/custom_searchbar.dart';
 import 'package:hkd/widgets/custom_textfield.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart'
+    as picker;
+import 'package:collection/collection.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({super.key, required this.model});
@@ -24,7 +27,6 @@ class PaymentScreen extends StatefulWidget {
 
 class _PaymentScreenState extends State<PaymentScreen> {
   final _networkUtil = NetworkUtil();
-  final now = DateTime.now();
   final paymentMethod = <Map<String, String>>[
     {'type': '0', 'text': 'Thanh toán khi nhận hàng'},
     {'type': '1', 'text': 'Chuyển khoản ngay'},
@@ -37,17 +39,19 @@ class _PaymentScreenState extends State<PaymentScreen> {
   final _formKey = GlobalKey<FormState>();
   final _timeFrom = TextEditingController();
   final _timeTo = TextEditingController();
+  DateTime _timeSlotDateTime = DateTime.now();
   final _timeSlot = TextEditingController();
   final _addressNumberCtrl = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    widget.model.shippingTimeSlot = DateFormat('dd/MM/yyyy').format(now);
-    widget.model.shippingTimeSlotFrom =
-        DateFormat('HH').format(now.add(const Duration(hours: 1)));
-    widget.model.shippingTimeSlotTo =
-        DateFormat('HH').format(now.add(const Duration(hours: 2)));
+    widget.model.shippingTimeSlot =
+        DateFormat('dd/MM/yyyy').format(_timeSlotDateTime);
+    widget.model.shippingTimeSlotFrom = DateFormat('HH')
+        .format(_timeSlotDateTime.add(const Duration(hours: 1)));
+    widget.model.shippingTimeSlotTo = DateFormat('HH')
+        .format(_timeSlotDateTime.add(const Duration(hours: 2)));
     _timeFrom.text = '${widget.model.shippingTimeSlotFrom ?? ''}h';
     _timeTo.text = '${widget.model.shippingTimeSlotTo ?? ''}h';
     _timeSlot.text = widget.model.shippingTimeSlot ?? '';
@@ -90,6 +94,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   _getBuyerAddress() async {
+    if (Configs.login?.token == null) return;
+
     List<AddressModel> addresses = [];
     final result = await _networkUtil.get(
         'get_buyer_address', {'token': Configs.login?.token ?? ''}, context);
@@ -112,6 +118,19 @@ class _PaymentScreenState extends State<PaymentScreen> {
     }
     initAddressesBuyer = addresses.take(3).toList();
     setState(() {});
+  }
+
+  _deleteCartUnsigned() {
+    Configs.unSignedCart.remove(widget.model.shopId);
+    // final products = Configs.unSignedCart[widget.model.shopId]?.products;
+    // final currentProducts = products
+    //     ?.firstWhereOrNull((element) => element.productId == item.productId);
+    // if (currentProducts == null) {
+    //   return;
+    // }
+    // if (currentProducts.quantity >= 1) {
+    //   currentProducts.quantity--;
+    // }
   }
 
   @override
@@ -388,8 +407,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   final result = await _networkUtil.post(
                       'checkout', widget.model.toJson(), context);
                   if (result != null && result['success'] > 0) {
-                    await _networkUtil.deleteCartOnline(
-                        widget.model.shopId, context);
+                    if (Configs.user != null && context.mounted) {
+                      await _networkUtil.deleteCartOnline(
+                          widget.model.shopId, context);
+                    }
+                    _deleteCartUnsigned();
                     Fluttertoast.showToast(
                         msg: 'Đơn hàng đã được gửi thành công');
 
@@ -440,28 +462,43 @@ class _PaymentScreenState extends State<PaymentScreen> {
   _showDate() async {
     final result = await showDatePicker(
         context: context,
-        firstDate: now,
+        firstDate: _timeSlotDateTime,
         initialEntryMode: DatePickerEntryMode.calendarOnly,
-        lastDate: now.add(const Duration(days: 30)));
+        lastDate: _timeSlotDateTime.add(const Duration(days: 30)));
     if (result != null) {
+      _timeSlotDateTime = result;
       _timeSlot.text = DateFormat('dd/MM/yyyy').format(result);
       setState(() {});
     }
   }
 
   _showTimeFrom() async {
-    final result = await showTimePicker(
-        context: context,
-        initialTime: widget.model.shippingTimeSlotFrom != null
-            ? TimeOfDay(
-                hour: int.parse(widget.model.shippingTimeSlotFrom!), minute: 0)
-            : TimeOfDay.fromDateTime(now),
-        builder: (context, child) {
-          return MediaQuery(
-            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-            child: child ?? const SizedBox(),
-          );
-        });
+    // final result = await showTimePicker(
+    //     context: context,
+    //     initialTime: widget.model.shippingTimeSlotFrom != null
+    //         ? TimeOfDay(
+    //             hour: int.parse(widget.model.shippingTimeSlotFrom!), minute: 0)
+    //         : TimeOfDay.fromDateTime(now),
+    //     builder: (context, child) {
+    //       return MediaQuery(
+    //         data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+    //         child: child ?? const SizedBox(),
+    //       );
+    //     });
+    // if (result != null) {
+    //   _timeFrom.text = '${result.hour}h';
+    //   setState(() {});
+    // }
+    final maxTime = DateTime(
+      _timeSlotDateTime.year,
+      _timeSlotDateTime.month,
+      _timeSlotDateTime.day + 1,
+    );
+    final result = await picker.DatePicker.showDateTimePicker(
+      context,
+      minTime: _timeSlotDateTime,
+      maxTime: maxTime,
+    );
     if (result != null) {
       _timeFrom.text = '${result.hour}h';
       setState(() {});
@@ -469,18 +506,23 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   _showTimeTo() async {
-    final result = await showTimePicker(
-        context: context,
-        initialTime: widget.model.shippingTimeSlotTo != null
-            ? TimeOfDay(
-                hour: int.parse(widget.model.shippingTimeSlotTo!), minute: 0)
-            : TimeOfDay(hour: now.hour + 1, minute: 0),
-        builder: (context, child) {
-          return MediaQuery(
-            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-            child: child ?? const SizedBox(),
-          );
-        });
+    final minTime = DateTime(
+        _timeSlotDateTime.year,
+        _timeSlotDateTime.month,
+        _timeSlotDateTime.day,
+        (int.tryParse(_timeFrom.text.substring(0, _timeFrom.text.length - 1)) ??
+                _timeSlotDateTime.hour) +
+            1);
+    final maxTime = DateTime(
+      _timeSlotDateTime.year,
+      _timeSlotDateTime.month,
+      _timeSlotDateTime.day + 1,
+    );
+    final result = await picker.DatePicker.showDateTimePicker(
+      context,
+      minTime: minTime,
+      maxTime: maxTime,
+    );
     if (result != null) {
       _timeTo.text = '${result.hour}h';
       setState(() {});

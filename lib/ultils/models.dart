@@ -1729,10 +1729,21 @@ class User {
   String? address;
   String? quote;
   String? linkImg;
+  String? imgBuyer;
+  String? imgShop;
   String? lat;
   String? lon;
   String? adminName;
   String? shopId;
+  String? licensePlates;
+  String? license;
+  String? licenseAfter;
+  String? motorReg;
+  String? motorRegAfter;
+  String? warranty;
+  String? avatar;
+  String? cmnd;
+  String? cmndAfter;
 
   User({
     this.userName,
@@ -1741,10 +1752,21 @@ class User {
     this.address,
     this.quote,
     this.linkImg,
+    this.imgBuyer,
+    this.imgShop,
     this.lat,
     this.lon,
     this.adminName,
     this.shopId,
+    this.licensePlates,
+    this.license,
+    this.licenseAfter,
+    this.motorReg,
+    this.motorRegAfter,
+    this.warranty,
+    this.avatar,
+    this.cmnd,
+    this.cmndAfter,
   });
 
   User.fromJson(Map<String, dynamic> json) {
@@ -1754,10 +1776,21 @@ class User {
     address = json['address'];
     quote = json['quote'];
     linkImg = json['link_img'];
+    imgBuyer = json['img_buyer'];
+    imgShop = json['img_shop'];
     lat = json['lat'];
     lon = json['lon'];
     adminName = json['admin_name'];
     shopId = json['shop_id'];
+    licensePlates = json['license_plates'];
+    license = json['licence'];
+    licenseAfter = json['license_after'];
+    motorReg = json['motor_reg'];
+    motorRegAfter = json['motor_reg_after'];
+    warranty = json['warranty'];
+    avatar = json['avatar'];
+    cmnd = json['cmnd'];
+    cmndAfter = json['cmnd_after'];
   }
 
   Map<String, String> toJson() {
@@ -1768,6 +1801,8 @@ class User {
     data['address'] = address ?? '';
     data['quote'] = quote ?? '';
     data['link_img'] = linkImg ?? '';
+    data['img_buyer'] = imgBuyer ?? '';
+    data['img_shop'] = imgShop ?? '';
     data['lat'] = lat ?? '';
     data['lon'] = lon ?? '';
     data['admin_name'] = adminName ?? '';

@@ -4,8 +4,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:hkd/anmition/fadeanimation.dart';
+import 'package:hkd/buyer/buyer_profile_screen.dart';
 import 'package:hkd/order_detail/buyer_order_detail_screen.dart';
-import 'package:hkd/user/profile_screen.dart';
+import 'package:hkd/shop/shop_profile_screen.dart';
 import 'package:hkd/order_detail/shop_order_detail_screen.dart';
 import 'package:hkd/trade/shop_detail_screen.dart';
 import 'package:hkd/ultils/func.dart';
@@ -298,7 +299,14 @@ class _ShopPageState extends State<ShopPage> with TickerProviderStateMixin {
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => const ProfileScreen(),
+                          builder: (context) {
+                            switch (Configs.userGroup) {
+                              case 0:
+                                return const BuyerProfileScreen();
+                              default:
+                                return const ShopProfileScreen();
+                            }
+                          },
                         ),
                       );
                     },

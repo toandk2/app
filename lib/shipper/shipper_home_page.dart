@@ -5,7 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:hkd/anmition/fadeanimation.dart';
-import 'package:hkd/user/profile_screen.dart';
+import 'package:hkd/shipper/shipper_profile_screen.dart';
 import 'package:hkd/order_detail/shipper_order_detail_screen.dart';
 import 'package:hkd/ultils/func.dart';
 import 'package:hkd/ultils/models.dart';
@@ -233,7 +233,7 @@ class _ShipperPageState extends State<ShipperPage>
                       onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => const ProfileScreen(),
+                            builder: (context) => const ShipperProfileScreen(),
                           ),
                         );
                       },

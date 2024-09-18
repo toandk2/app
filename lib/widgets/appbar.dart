@@ -127,6 +127,7 @@ class _MyDrawerState extends State<MyDrawer> {
         id: Configs.login?.userId ?? '',
         name: Configs.login?.name ?? '',
         type: 3,
+        image: Configs.user?.linkImg ?? '',
       );
       return;
     }
@@ -136,12 +137,14 @@ class _MyDrawerState extends State<MyDrawer> {
         id: Configs.login?.buyerId ?? '',
         name: Configs.login?.buyerName ?? '',
         type: 0,
+        image: Configs.user?.linkImg ?? '',
       );
       if (Configs.login?.shopId != null && Configs.login?.shopId != '0') {
         _secondProfile = SecondProfile(
           id: Configs.login?.shopId ?? '',
           name: Configs.login?.shopName ?? '',
           type: 1,
+          image: Configs.user?.imgShop ?? '',
         );
       }
     }
@@ -150,12 +153,14 @@ class _MyDrawerState extends State<MyDrawer> {
         id: Configs.login?.shopId ?? '',
         name: Configs.login?.shopName ?? '',
         type: 1,
+        image: Configs.user?.linkImg ?? '',
       );
       if (Configs.login?.buyerId != null && Configs.login?.buyerId != '0') {
         _secondProfile = SecondProfile(
           id: Configs.login?.buyerId ?? '',
           name: Configs.login?.buyerName ?? '',
           type: 0,
+          image: Configs.user?.imgBuyer ?? '',
         );
       }
     }
@@ -304,7 +309,7 @@ class _MyDrawerState extends State<MyDrawer> {
                                 backgroundColor: const Color(0xFFB2B2B2),
                                 backgroundImage: NetworkImage(Configs.BASE_URL
                                         .replaceAll('/api', '/images/avatars') +
-                                    (Configs.user?.linkImg ?? '')),
+                                    (_firstProfile?.image ?? '')),
                                 radius: 20,
                               ),
                               if (_secondProfile != null)
@@ -482,7 +487,7 @@ class _MyDrawerState extends State<MyDrawer> {
                               backgroundColor: const Color(0xFFB2B2B2),
                               backgroundImage: NetworkImage(Configs.BASE_URL
                                       .replaceAll('/api', '/images/avatars') +
-                                  (Configs.user?.linkImg ?? '')),
+                                  (_secondProfile?.image ?? '')),
                               radius: 20,
                             ),
                             const Gap(4),
@@ -887,10 +892,12 @@ class SecondProfile {
   String id;
   String name;
   int type;
+  String image;
 
   SecondProfile({
     required this.id,
     required this.name,
     required this.type,
+    required this.image,
   });
 }

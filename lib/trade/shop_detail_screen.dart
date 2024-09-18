@@ -224,18 +224,20 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
   }
 
   _addItembyIndex(int index) async {
-    if (Configs.userGroup != 0) {
+    if (Configs.userGroup != 0 && Configs.user != null) {
       Fluttertoast.showToast(
           msg:
               'Bạn cần chuyển sang chế độ Người tìm mua để có thể thực hiện chức năng này',
-          timeInSecForIosWeb: 5,toastLength: Toast.LENGTH_LONG);
+          timeInSecForIosWeb: 5,
+          toastLength: Toast.LENGTH_LONG);
       return;
     }
     if (widget.isShopBuying && Configs.user?.shopId == "0") {
       Fluttertoast.showToast(
           msg:
               'Bạn cần đăng nhập vào tài khoản Hộ kinh doanh với chế độ tìm mua để có thể thực hiện chức năng này',
-          timeInSecForIosWeb: 5,toastLength: Toast.LENGTH_LONG);
+          timeInSecForIosWeb: 5,
+          toastLength: Toast.LENGTH_LONG);
       return;
     }
     final isNewCart = _checkoutModel.data.isEmpty;

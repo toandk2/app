@@ -30,15 +30,15 @@ class _ShipperRegisterScreenState extends State<ShipperRegisterScreen> {
   final formKey = GlobalKey<FormState>();
   final networkUtil = NetworkUtil();
   // Position? _currentPosition;
-  final ShipperRegisterModel _model = ShipperRegisterModel();
-  File? license;
-  File? license_after;
-  File? motorReg;
-  File? motor_reg_after;
-  File? warranty;
-  File? personalPhoto;
-  File? cccd;
-  File? cmnd_after;
+  final _model = ShipperRegisterModel();
+  String? license;
+  String? license_after;
+  String? motorReg;
+  String? motor_reg_after;
+  String? warranty;
+  String? personalPhoto;
+  String? cmnd;
+  String? cmnd_after;
   bool _isLoading = false;
   String? validatePassword;
 
@@ -89,7 +89,7 @@ class _ShipperRegisterScreenState extends State<ShipperRegisterScreen> {
         Fluttertoast.showToast(msg: "Thiếu bảo hiểm xe.");
         return;
       }
-      if (cccd == null) {
+      if (cmnd == null) {
         Fluttertoast.showToast(msg: "Thiếu căn cước công dân mặt trước.");
         return;
       }
@@ -105,16 +105,14 @@ class _ShipperRegisterScreenState extends State<ShipperRegisterScreen> {
       // _model.deviceType = 'mobile';
       // _model.deviceId = Configs.deviceData['id'] ?? "";
       List<http.MultipartFile> files = [
-        await http.MultipartFile.fromPath('licence', license!.path),
-        await http.MultipartFile.fromPath('motor_reg', motorReg!.path),
-        await http.MultipartFile.fromPath('warranty', warranty!.path),
-        await http.MultipartFile.fromPath('cccd', cccd!.path),
-        await http.MultipartFile.fromPath('cmnd_after', cmnd_after!.path),
-        await http.MultipartFile.fromPath('license_after', license_after!.path),
-        await http.MultipartFile.fromPath(
-            'motor_reg_after', motor_reg_after!.path),
-        await http.MultipartFile.fromPath(
-            'personal_photo', personalPhoto!.path),
+        await http.MultipartFile.fromPath('licence', license!),
+        await http.MultipartFile.fromPath('motor_reg', motorReg!),
+        await http.MultipartFile.fromPath('warranty', warranty!),
+        await http.MultipartFile.fromPath('cmnd', cmnd!),
+        await http.MultipartFile.fromPath('cmnd_after', cmnd_after!),
+        await http.MultipartFile.fromPath('license_after', license_after!),
+        await http.MultipartFile.fromPath('motor_reg_after', motor_reg_after!),
+        await http.MultipartFile.fromPath('personal_photo', personalPhoto!),
       ];
       final json = _model.toJson();
       try {
@@ -138,8 +136,9 @@ class _ShipperRegisterScreenState extends State<ShipperRegisterScreen> {
             }), ModalRoute.withName('/home'));
           }
         }
+        Fluttertoast.showToast(msg: "Đăng ký không thành công.");
       } catch (e) {
-        Fluttertoast.showToast(msg: "Đăng nhập không thành công.");
+        Fluttertoast.showToast(msg: "Đăng ký không thành công.");
         setState(() => _isLoading = false);
       }
     }
@@ -344,7 +343,7 @@ class _ShipperRegisterScreenState extends State<ShipperRegisterScreen> {
                   const Gap(8),
                   _PickFileWidget(
                     pickedFile: (file) {
-                      personalPhoto = file;
+                      personalPhoto = file.path;
                       setState(() {});
                     },
                   ),
@@ -355,7 +354,7 @@ class _ShipperRegisterScreenState extends State<ShipperRegisterScreen> {
                   _PickFileWidget(
                     subText: 'Mặt trước',
                     pickedFile: (file) {
-                      cccd = file;
+                      cmnd = file.path;
                       setState(() {});
                     },
                   ),
@@ -363,7 +362,7 @@ class _ShipperRegisterScreenState extends State<ShipperRegisterScreen> {
                   _PickFileWidget(
                     subText: 'Mặt sau',
                     pickedFile: (file) {
-                      cmnd_after = file;
+                      cmnd_after = file.path;
                       setState(() {});
                     },
                   ),
@@ -373,7 +372,7 @@ class _ShipperRegisterScreenState extends State<ShipperRegisterScreen> {
                   _PickFileWidget(
                     subText: 'Mặt trước',
                     pickedFile: (file) {
-                      license = file;
+                      license = file.path;
                       setState(() {});
                     },
                   ),
@@ -381,7 +380,7 @@ class _ShipperRegisterScreenState extends State<ShipperRegisterScreen> {
                   _PickFileWidget(
                     subText: 'Mặt sau',
                     pickedFile: (file) {
-                      license_after = file;
+                      license_after = file.path;
                       setState(() {});
                     },
                   ),
@@ -392,7 +391,7 @@ class _ShipperRegisterScreenState extends State<ShipperRegisterScreen> {
                   _PickFileWidget(
                     subText: 'Mặt trước',
                     pickedFile: (file) {
-                      motorReg = file;
+                      motorReg = file.path;
                       setState(() {});
                     },
                   ),
@@ -400,7 +399,7 @@ class _ShipperRegisterScreenState extends State<ShipperRegisterScreen> {
                   _PickFileWidget(
                     subText: 'Mặt sau',
                     pickedFile: (file) {
-                      motor_reg_after = file;
+                      motor_reg_after = file.path;
                       setState(() {});
                     },
                   ),
@@ -409,7 +408,7 @@ class _ShipperRegisterScreenState extends State<ShipperRegisterScreen> {
                   const Gap(8),
                   _PickFileWidget(
                     pickedFile: (file) {
-                      warranty = file;
+                      warranty = file.path;
                       setState(() {});
                     },
                   ),
@@ -556,14 +555,18 @@ class _PickFileWidgetState extends State<_PickFileWidget> {
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
             size: 40,
             onPressed: () async {
-              final result =
-                  await FilePicker.platform.pickFiles(type: FileType.image);
-
-              if (result != null) {
-                file = File(result.files.single.path!);
-                widget.pickedFile.call(file!);
-              } else {
-                // User canceled the picker
+              try {
+                final result =
+                    await FilePicker.platform.pickFiles(type: FileType.image);
+                if (result != null) {
+                  file = File(result.files.single.path!);
+                  widget.pickedFile.call(file!);
+                } else {
+                  // User canceled the picker
+                  Fluttertoast.showToast(msg: 'Bạn chưa chọn ảnh');
+                }
+              } catch (e) {
+                Fluttertoast.showToast(msg: 'Không thể thực hiện lấy ảnh này');
               }
             },
             text:

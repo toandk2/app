@@ -25,6 +25,7 @@ import 'package:path/path.dart';
 import 'package:rxdart/subjects.dart';
 
 class Configs {
+  // static const String BASE_URL = "https://dothithongminh1.vn/api/";
   static const String BASE_URL = "https://test.hkdo.vn/api/";
   static Login? login;
   static User? user;
@@ -452,7 +453,6 @@ class NetworkUtil {
       }
       return newData;
     } catch (e) {
-      print(e);
       return [];
     }
   }
@@ -565,7 +565,6 @@ class NetworkUtil {
     final response = await get('user_info', {}, context);
     if (response != null && response['status']) {
       Configs.user = User.fromJson(response['user']);
-
       return true;
     }
     return false;
