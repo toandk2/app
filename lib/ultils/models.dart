@@ -2547,6 +2547,7 @@ class CartItem {
     image = json['image_file'];
     quantity = json['count'] ?? 0;
     price = json['list_price'] ?? 0.0;
+    unitDefault = json['unit_default'] ?? '';
     subTotal = quantity * price!;
   }
 
