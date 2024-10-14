@@ -1412,6 +1412,7 @@ class AddressModel {
   String? latMax;
   String? lonMin;
   String? lonMax;
+  String? location;
 
   AddressModel(
       {this.id,
@@ -1424,7 +1425,9 @@ class AddressModel {
       this.latMin,
       this.latMax,
       this.lonMin,
-      this.lonMax});
+      this.lonMax,
+      this.location
+});
 
   AddressModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -1437,6 +1440,7 @@ class AddressModel {
     latMax = json['lat-max'];
     lonMin = json['lon-min'];
     lonMax = json['lon-max'];
+    location = json['location'];
   }
 
   Map<String, dynamic> toJson() {
@@ -1460,7 +1464,7 @@ class AddressModel {
       indexString = index.toString();
     }
     final Map<String, String> data = <String, String>{};
-    data['location$indexString'] = '$xa, $huyen, $tinh';
+    data['location$indexString'] = '${xa?.trim()}, ${huyen?.trim()}, ${tinh?.trim()}';
     data['address$indexString'] = diachi ?? '';
     data['lat$indexString'] = lat ?? '';
     data['lon$indexString'] = lon ?? '';
@@ -2543,6 +2547,7 @@ class CartItem {
     image = json['image_file'];
     quantity = json['count'] ?? 0;
     price = json['list_price'] ?? 0.0;
+    unitDefault = json['unit_default'] ?? '';
     subTotal = quantity * price!;
   }
 
