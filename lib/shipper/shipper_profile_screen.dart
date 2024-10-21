@@ -802,6 +802,7 @@ class _PickFileWidget extends StatefulWidget {
 class _PickFileWidgetState extends State<_PickFileWidget> {
   File? file;
   final baseUrlShipper = 'https://test.hkdo.vn/xeom/';
+  // final baseUrlShipper = 'https://dothithongminh1.vn/xeom/';
 
   @override
   Widget build(BuildContext context) {
