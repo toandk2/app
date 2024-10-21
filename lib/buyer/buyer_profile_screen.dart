@@ -75,19 +75,23 @@ class _BuyerProfileScreenState extends State<BuyerProfileScreen> {
         'get_buyer_address', {'token': Configs.login?.token ?? ''}, context);
     if (result != null && result is List) {
       for (var i = 0; i < result.length; i++) {
-        final stringAddressSplited =
-            result[i]['location'].toString().split(',');
-        if (stringAddressSplited.length < 3 ||
-            stringAddressSplited.elementAtOrNull(1)?.contains("Quận") != true) {
-          continue;
-        }
+        final stringAddressSplited = result[i]['location'].toString().split(',');
+        // print(result[i]);
+        // if (stringAddressSplited.length < 3 ||
+        //     stringAddressSplited.elementAtOrNull(1)?.contains("Quận") != true) {
+        //   continue;
+        // }
+
         addresses.add(AddressModel(
-            tinh: stringAddressSplited[2],
-            huyen: stringAddressSplited[1],
-            xa: stringAddressSplited[0],
+            tinh: stringAddressSplited.length > 2 ? stringAddressSplited[2] : '',
+            huyen: stringAddressSplited.length > 1 ? stringAddressSplited[1] : '',
+            xa: stringAddressSplited.isNotEmpty ? stringAddressSplited[0] : '',
             diachi: result[i]['address'],
             lat: result[i]['lat'],
-            lon: result[i]['lon']));
+            lon: result[i]['lon'],
+            location: result[i]['location'],
+            )
+        );
       }
     }
     if (addresses.length < 3) {
@@ -123,7 +127,6 @@ class _BuyerProfileScreenState extends State<BuyerProfileScreen> {
         final address = initBuyerAddresses[i];
         body.addAll(address.toAddressStringJson(i + 1));
       }
-
       try {
         final result = await _networkUtil.multipartPost(
             updateInfoUrl, body, files, context);
@@ -432,7 +435,7 @@ class _AddressWidgetState extends State<_AddressWidget> {
         ),
         LocationSearchbar(
           initValue:
-              '${widget.initModel?.tinh ?? ''}, ${widget.initModel?.huyen ?? ''}, ${widget.initModel?.xa ?? ''}',
+          widget.initModel?.location ?? '',
           getInitPosition: false,
           onSelected: (model) async {
             widget.updateTHX(model.tinh ?? '', model.huyen ?? '',
