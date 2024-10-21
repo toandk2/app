@@ -25,8 +25,8 @@ import 'package:path/path.dart';
 import 'package:rxdart/subjects.dart';
 
 class Configs {
-  // static const String BASE_URL = "https://dothithongminh1.vn/api/";
-  static const String BASE_URL = "https://test.hkdo.vn/api/";
+  static const String BASE_URL = "https://dothithongminh1.vn/api/";
+  // static const String BASE_URL = "https://test.hkdo.vn/api/";
   static Login? login;
   static User? user;
   static final countCart = BehaviorSubject.seeded(0);
@@ -249,6 +249,7 @@ class NetworkUtil {
       }
       return resBody;
     } catch (e) {
+      if (kDebugMode) print(e);
       return;
     }
   }
@@ -265,23 +266,22 @@ class NetworkUtil {
     url = Configs.BASE_URL + url;
     if (kDebugMode) print(url);
     try {
-      return http
+      final response = await http
           .get(Uri.parse(url), headers: headers)
-          .timeout(const Duration(seconds: 3))
-          .then((http.Response response) {
-        final String res = response.body;
-        // if (kDebugMode) print(res);
-        final int statusCode = response.statusCode;
+          .timeout(const Duration(seconds: 3));
 
-        if (statusCode < 200 || statusCode > 400) {
-          return null;
-        }
-        if (res.length > 4) {
-          return _handleResponse(res, context);
-        } else {
-          return null;
-        }
-      });
+      final String res = response.body;
+      // if (kDebugMode) print(res);
+      final int statusCode = response.statusCode;
+
+      if (statusCode < 200 || statusCode > 400) {
+        return null;
+      }
+      if (res.length > 4) {
+        return _handleResponse(res, context);
+      } else {
+        return null;
+      }
     } catch (e) {
       if (kDebugMode) print(e);
       return null;
@@ -632,6 +632,7 @@ class NetworkUtil {
     BuildContext context,
   ) async {
     iOSPermission();
+
     String? apnsToken;
     if (Platform.isIOS) {
       apnsToken = await FirebaseMessaging.instance.getAPNSToken();
@@ -650,7 +651,6 @@ class NetworkUtil {
 
   void iOSPermission() async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
-
     NotificationSettings settings = await messaging.requestPermission(
       alert: true,
       announcement: false,

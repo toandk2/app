@@ -62,6 +62,7 @@ class _SearchScreenState extends State<SearchScreen> {
       _getAutoScroll();
       listenFirebase(context);
       readJson();
+      // AndroidFlutterNotificationsPlugin.requestExactAlarmsPermission();
     });
     super.initState();
   }
@@ -398,6 +399,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   text: (value) {
                     return (value.value ?? '').capitalizeByWord();
                   },
+                  style: Styles.textStyle,
                   hintText: 'hoặc tìm theo sản phẩm chính',
                   onChanged: _getProducts,
                   textCtrl: _productCtrl,
@@ -416,6 +418,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     return '${value.name ?? ''} ${(value.value?.isNotEmpty == true ? '(${value.value})' : '')}'
                         .capitalizeByWord();
                   },
+                  style: Styles.textStyle,
                   hintText: 'hoặc tìm theo tên cửa hàng/thông điệp người bán',
                   onChanged: _getShopByMessage,
                   textCtrl: _sellerMessageCtrl,

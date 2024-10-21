@@ -322,11 +322,11 @@ class _ShopProfileScreenState extends State<ShopProfileScreen> {
                   onSaved: (val) {
                     _user?.quote = val;
                   },
-                  validator: (val) {
-                    return val?.isNotEmpty != true
-                        ? "Thông điệp kinh doanh không để trống"
-                        : null;
-                  },
+                  // validator: (val) {
+                  //   return val?.isNotEmpty != true
+                  //       ? "Thông điệp kinh doanh không để trống"
+                  //       : null;
+                  // },
                   hintText: 'Nhập thông điệp kinh doanh',
                 ),
                 const Gap(

@@ -211,14 +211,50 @@ class _CustomSearchBarState<T> extends State<CustomSearchBar<T>> {
               itemBuilder: (context, index) {
                 final item = data[index];
                 if (item == null) return const SizedBox();
+                final search = _textCtrl.text;
+                final text = widget.text(item);
+
+                final matches = search.allMatches(text.toLowerCase()).toList();
+                final spans = <TextSpan>[];
+                print(search);
+                print(text);
+                print(matches);
+                if (matches.isEmpty) {
+                  spans.add(TextSpan(text: text));
+                } else {
+                  for (var i = 0; i < matches.length; i++) {
+                    final strStart = i == 0 ? 0 : matches[i - 1].end;
+                    final match = matches[i];
+                    spans.add(
+                      TextSpan(
+                        text: text.substring(
+                          strStart,
+                          match.start,
+                        ),
+                      ),
+                    );
+                    spans.add(
+                      TextSpan(
+                        text: text.substring(
+                          match.start,
+                          match.end,
+                        ),
+                        style: const TextStyle(
+                            color: Colors.blue, fontWeight: FontWeight.w600),
+                      ),
+                    );
+                  }
+                  spans.add(TextSpan(text: text.substring(matches.last.end)));
+                }
                 return InkWell(
                   onTap: () => onPickItem(index),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      widget.text(data[index]),
+                    child: RichText(
+                        text: TextSpan(
                       style: style,
-                    ),
+                      children: spans,
+                    )),
                   ),
                 );
               },

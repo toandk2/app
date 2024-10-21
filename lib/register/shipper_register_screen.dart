@@ -553,7 +553,7 @@ class _PickFileWidgetState extends State<_PickFileWidget> {
           flex: 3,
           child: GFButton(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-            size: 40,
+            size: 50,
             onPressed: () async {
               try {
                 final result =
@@ -566,11 +566,12 @@ class _PickFileWidgetState extends State<_PickFileWidget> {
                   Fluttertoast.showToast(msg: 'Bạn chưa chọn ảnh');
                 }
               } catch (e) {
+                print(e);
                 Fluttertoast.showToast(msg: 'Không thể thực hiện lấy ảnh này');
               }
             },
             text:
-                "Đính kèm file ${widget.subText != null ? "(${widget.subText})" : ''}",
+                "Đính kèm file ${widget.subText != null ? "\n(${widget.subText})" : ''}",
             textStyle: Styles.textStyle.copyWith(
                 color: Styles.primaryColor3, fontWeight: FontWeight.w600),
             color: const Color(0xFFEBF2F8),
