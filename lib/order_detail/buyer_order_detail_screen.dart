@@ -113,6 +113,82 @@ class _BuyerOrderDetailScreenState extends State<BuyerOrderDetailScreen>
       _status = 3;
     }
     setState(() {});
+
+    // Thực hiện show thông báo để người dùng biết đơn hàng đã thay đổi phí ship bởi người bán
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (order?.status == 0 &&
+          order?.originalShippingCost != null &&
+          order!.originalShippingCost! > 0) {
+        showDialog(
+            context: context,
+            builder: (_) {
+              return PopScope(
+                  canPop: false,
+                  onPopInvoked: (_) async {
+                    Navigator.of(context).pop(); // Đóng hộp thoại
+                    Navigator.of(context)
+                        .pop(); // Điều hướng quay lại trang trước
+                  },
+                  child: DialogAction(
+                    icon: SvgPicture.asset(
+                      'assets/icons/profile/red-biking.svg',
+                      width: 24,
+                      height: 24,
+                    ),
+                    title: 'Xác nhận thay đổi phí vận chuyển?',
+                    content:
+                        'Phí vận chuyển ban đầu: ${formatter.format(order?.originalShippingCost)}đ \n Phí vận chuyển mới: ${formatter.format(order?.shippingCost)}đ',
+                    text1: 'Xác nhận',
+                    text2: 'Từ chối',
+                    onTap1: () async {
+                      Navigator.pop(context);
+                      await EasyLoading.show(
+                        status: 'Đang tải xử lý...',
+                        maskType: EasyLoadingMaskType.clear,
+                      );
+                      final body = {'order_id': order?.id ?? ''};
+                      if (context.mounted) {
+                        final result = await _netUtil.post(
+                            'confirm_ship_cost', body, context);
+                        await EasyLoading.dismiss();
+                        if (result != null && result['success'] == 1) {
+                          Fluttertoast.showToast(
+                              msg:
+                                  'Xác nhận thay đổi phí vận chuyển thành công');
+                        } else {
+                          Fluttertoast.showToast(
+                              msg: 'Lỗi xác nhận thay đổi phí vận chuyển');
+                        }
+                      }
+                    },
+                    onTap2: () async {
+                      Navigator.pop(context);
+                      await EasyLoading.show(
+                        status: 'Đang tải xử lý...',
+                        maskType: EasyLoadingMaskType.clear,
+                      );
+                      final body = {'order_id': order?.id ?? ''};
+                      if (context.mounted) {
+                        final result = await _netUtil.post(
+                            'reject_ship_cost', body, context);
+                        await EasyLoading.dismiss();
+                        if (result != null && result['success'] == 1) {
+                          Fluttertoast.showToast(
+                              msg:
+                                  'Từ chối thay đổi phí vận chuyển thành công');
+                          order?.shippingCost = order?.originalShippingCost;
+                          order?.originalShippingCost = 0;
+                          setState(() {});
+                        } else {
+                          Fluttertoast.showToast(
+                              msg: 'Lỗi từ chối thay đổi phí vận chuyển');
+                        }
+                      }
+                    },
+                  ));
+            });
+      }
+    });
   }
 
   @override

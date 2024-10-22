@@ -504,6 +504,7 @@ class OrderDetails {
   int? status;
   String? note;
   num? shippingCost;
+  num? originalShippingCost;
   String? lat1;
   String? lon1;
   String? lat2;
@@ -539,6 +540,7 @@ class OrderDetails {
       this.status,
       this.note,
       this.shippingCost,
+      this.originalShippingCost,
       this.lat1,
       this.lon1,
       this.lat2,
@@ -574,6 +576,7 @@ class OrderDetails {
     status = int.parse(json['status']);
     note = json['note'];
     shippingCost = double.parse(json['shipping_cost']);
+    originalShippingCost = json['original_shipping_cost'] != null ? double.parse(json['original_shipping_cost']) : null;
     lat1 = json['lat1'];
     lon1 = json['lon1'];
     lat2 = json['lat2'];
@@ -617,6 +620,7 @@ class OrderDetails {
     data['status'] = status;
     data['note'] = note;
     data['shipping_cost'] = shippingCost;
+    data['original_shipping_cost'] = originalShippingCost;
     data['lat1'] = lat1;
     data['lon1'] = lon1;
     data['lat2'] = lat2;
@@ -799,6 +803,7 @@ class BuyerOrderDetail {
   int? status;
   String? note;
   num? shippingCost;
+  num? originalShippingCost;
   String? lat1;
   String? lon1;
   String? lat2;
@@ -834,6 +839,7 @@ class BuyerOrderDetail {
       this.status,
       this.note,
       this.shippingCost,
+      this.originalShippingCost,
       this.lat1,
       this.lon1,
       this.lat2,
@@ -871,6 +877,7 @@ class BuyerOrderDetail {
     note = json['note'];
     shippingCost =
         json['shipping_cost'] == null ? 0 : double.parse(json['shipping_cost']);
+    originalShippingCost = json['original_shipping_cost'] == null ? 0 : double.parse(json['original_shipping_cost']);
     lat1 = json['lat1'];
     lon1 = json['lon1'];
     lat2 = json['lat2'];
@@ -909,6 +916,7 @@ class BuyerOrderDetail {
     data['status'] = status;
     data['note'] = note;
     data['shipping_cost'] = shippingCost;
+    data['original_shipping_cost'] = originalShippingCost;
     data['lat1'] = lat1;
     data['lon1'] = lon1;
     data['lat2'] = lat2;
