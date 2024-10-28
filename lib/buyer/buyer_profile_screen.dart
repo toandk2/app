@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
@@ -12,6 +13,7 @@ import 'package:hkd/ultils/models.dart';
 import 'package:hkd/ultils/styles.dart';
 import 'package:hkd/user/login_screen.dart';
 import 'package:hkd/widgets/appbar.dart';
+import 'package:hkd/widgets/custom_dialog.dart';
 import 'package:hkd/widgets/custom_searchbar.dart';
 import 'package:hkd/widgets/custom_textfield.dart';
 import 'package:http/http.dart' as http;
@@ -75,7 +77,8 @@ class _BuyerProfileScreenState extends State<BuyerProfileScreen> {
         'get_buyer_address', {'token': Configs.login?.token ?? ''}, context);
     if (result != null && result is List) {
       for (var i = 0; i < result.length; i++) {
-        final stringAddressSplited = result[i]['location'].toString().split(',');
+        final stringAddressSplited =
+            result[i]['location'].toString().split(',');
         // print(result[i]);
         // if (stringAddressSplited.length < 3 ||
         //     stringAddressSplited.elementAtOrNull(1)?.contains("Quận") != true) {
@@ -83,15 +86,14 @@ class _BuyerProfileScreenState extends State<BuyerProfileScreen> {
         // }
 
         addresses.add(AddressModel(
-            tinh: stringAddressSplited.length > 2 ? stringAddressSplited[2] : '',
-            huyen: stringAddressSplited.length > 1 ? stringAddressSplited[1] : '',
-            xa: stringAddressSplited.isNotEmpty ? stringAddressSplited[0] : '',
-            diachi: result[i]['address'],
-            lat: result[i]['lat'],
-            lon: result[i]['lon'],
-            location: result[i]['location'],
-            )
-        );
+          tinh: stringAddressSplited.length > 2 ? stringAddressSplited[2] : '',
+          huyen: stringAddressSplited.length > 1 ? stringAddressSplited[1] : '',
+          xa: stringAddressSplited.isNotEmpty ? stringAddressSplited[0] : '',
+          diachi: result[i]['address'],
+          lat: result[i]['lat'],
+          lon: result[i]['lon'],
+          location: result[i]['location'],
+        ));
       }
     }
     if (addresses.length < 3) {
@@ -149,18 +151,40 @@ class _BuyerProfileScreenState extends State<BuyerProfileScreen> {
     }
   }
 
-  _disableAccount() async {
-    final result = await _networkUtil.post('disable_account', {}, context);
-    if (result != null && result['success'] == 1) {
-      Fluttertoast.showToast(msg: 'Vô hiệu hoá tài khoản thành công.');
-      Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(
-            builder: (_) => const LoginScreen(),
-          ),
-          ModalRoute.withName('/home'));
-    } else {
-      Fluttertoast.showToast(msg: 'Vô hiệu hoá tài khoản không thành công.');
-    }
+  _deleteAccount() async {
+    showDialog(
+        context: context,
+        builder: (_) {
+          return DialogAction(
+            icon: Image.asset('assets/images/icons-cancel.png'),
+            title: 'Xoá tài khoản này?',
+            content:
+                'Thông tin tài khoản của bạn sẽ bị xoá hoàn toàn khỏi hệ thống, bạn có đồng ý?',
+            text1: 'Đồng ý',
+            text2: 'Không',
+            onTap1: () async {
+              Navigator.pop(context);
+              await EasyLoading.show(
+                status: 'Đang tải xử lý...',
+                maskType: EasyLoadingMaskType.clear,
+              );
+              final result =
+                  await _networkUtil.post('delete_account', {}, context);
+              await EasyLoading.dismiss();
+              if (result != null && result['success'] == 1) {
+                Fluttertoast.showToast(msg: 'Xoá tài khoản thành công.');
+                Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(
+                      builder: (_) => const LoginScreen(),
+                    ),
+                    ModalRoute.withName('/home'));
+              } else {
+                Fluttertoast.showToast(msg: 'Xoá tài khoản không thành công.');
+              }
+            },
+            onTap2: () => Navigator.pop(context),
+          );
+        });
   }
 
   @override
@@ -328,7 +352,7 @@ class _BuyerProfileScreenState extends State<BuyerProfileScreen> {
                   ),
                   const Gap(6),
                   GFButton(
-                    onPressed: _disableAccount,
+                    onPressed: _deleteAccount,
                     // padding: const EdgeInsets.all(16),
                     borderShape: RoundedRectangleBorder(
                       // side: const BorderSide(width: 1, color: Color(0xFF1076D0)),
@@ -337,7 +361,7 @@ class _BuyerProfileScreenState extends State<BuyerProfileScreen> {
                     size: 48,
                     color: Styles.moneyColor,
                     type: GFButtonType.solid,
-                    text: 'Vô hiệu hoá tài khoản',
+                    text: 'Xoá tài khoản',
                     // textColor: Colors.white,
                     fullWidthButton: true,
                     textStyle: const TextStyle(
@@ -434,8 +458,7 @@ class _AddressWidgetState extends State<_AddressWidget> {
           height: 8,
         ),
         LocationSearchbar(
-          initValue:
-          widget.initModel?.location ?? '',
+          initValue: widget.initModel?.location ?? '',
           getInitPosition: false,
           onSelected: (model) async {
             widget.updateTHX(model.tinh ?? '', model.huyen ?? '',

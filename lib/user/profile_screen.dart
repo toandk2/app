@@ -175,17 +175,17 @@
 //     }
 //   }
 
-//   _disableAccount() async {
+//   _deleteAccount() async {
 //     final result = await _networkUtil.post('disable_account', {}, context);
 //     if (result != null && result['success'] == 1) {
-//       Fluttertoast.showToast(msg: 'Vô hiệu hoá tài khoản thành công.');
+//       Fluttertoast.showToast(msg: 'Xoá tài khoản thành công.');
 //       Navigator.of(context).pushAndRemoveUntil(
 //           MaterialPageRoute(
 //             builder: (_) => const LoginScreen(),
 //           ),
 //           ModalRoute.withName('/home'));
 //     } else {
-//       Fluttertoast.showToast(msg: 'Vô hiệu hoá tài khoản không thành công.');
+//       Fluttertoast.showToast(msg: 'Xoá tài khoản không thành công.');
 //     }
 //   }
 
@@ -445,7 +445,7 @@
 //                   ),
 //                   const Gap(6),
 //                   GFButton(
-//                     onPressed: _disableAccount,
+//                     onPressed: _deleteAccount,
 //                     // padding: const EdgeInsets.all(16),
 //                     borderShape: RoundedRectangleBorder(
 //                       // side: const BorderSide(width: 1, color: Color(0xFF1076D0)),
@@ -454,7 +454,7 @@
 //                     size: 48,
 //                     color: Styles.moneyColor,
 //                     type: GFButtonType.solid,
-//                     text: 'Vô hiệu hoá tài khoản',
+//                     text: 'Xoá tài khoản',
 //                     // textColor: Colors.white,
 //                     fullWidthButton: true,
 //                     textStyle: const TextStyle(
