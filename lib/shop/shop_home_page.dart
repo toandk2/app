@@ -35,8 +35,10 @@ class _ShopPageState extends State<ShopPage> with TickerProviderStateMixin {
   int _statusOrderList = 0;
   Status? status;
   List<Status?> listStatus = [];
+
   late final TabController _tabController;
-  // String txtStatus = "Đang tải dữ liệu";
+  late TextEditingController _textSearch;
+  String txtStatus = "Đang tải dữ liệu";
   @override
   void initState() {
     if (Configs.userGroup == 0) {
@@ -56,9 +58,11 @@ class _ShopPageState extends State<ShopPage> with TickerProviderStateMixin {
         length: listStatus.length,
         vsync: this);
     super.initState();
+    _textSearch = TextEditingController();
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) {
         status = listStatus[_tabController.index];
+        _textSearch.clear();
         getOders();
       }
     });
@@ -82,13 +86,14 @@ class _ShopPageState extends State<ShopPage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    _textSearch.dispose();
     _scrollController.dispose();
     _tabController.dispose();
     super.dispose();
   }
 
   Future<void> getOders() async {
-    // txtStatus = "Đang tải dữ liệu";
+    txtStatus = "Đang tải dữ liệu";
     orders = [];
     _statusOrderList = 0;
     setState(() {});
@@ -107,20 +112,22 @@ class _ShopPageState extends State<ShopPage> with TickerProviderStateMixin {
     //   orders.addAll(await _getOrders(4));
     // }
     if (orders.isEmpty) {
-      // txtStatus = "Không tìm thấy đơn hàng";
+      txtStatus = "Không tìm thấy đơn hàng";
       _statusOrderList = 3;
       setState(() {});
       return;
     }
     _statusOrderList = 2;
-    // txtStatus = "Đã tìm thấy ${orders.length} đơn hàng";
+    txtStatus = "Đã tìm thấy ${orders.length} đơn hàng";
     setState(() {});
   }
 
   Future<List<Order>> _getOrders(int status) async {
+    // Chuoi search
     List<Order> localOrders = [];
     Map<String, String> body = {
       "status": status.toString(),
+      'search': _textSearch.text,
     };
 
     final result = await _netUtil.get(_getUrlOrder(), body, context);
@@ -378,6 +385,54 @@ class _ShopPageState extends State<ShopPage> with TickerProviderStateMixin {
                     },
                   ),
                 ),
+                const Gap(10),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      child: Text(txtStatus,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black,
+                          ))),
+                ),
+                const Gap(10),
+                Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 14),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            child: TextField(
+                          controller: _textSearch,
+                          style: const TextStyle(color: Colors.black),
+                          decoration: const InputDecoration(
+                            hintText:
+                                'Tìm theo mã đơn hàng, tên sản phẩm, tên hộ kinh doanh',
+                            border: OutlineInputBorder(),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.black),
+                            ),
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 0, horizontal: 5),
+                          ),
+                        )),
+                        ElevatedButton(
+                          onPressed: _onRefresh,
+                          style: ElevatedButton.styleFrom(
+                            elevation: 0,
+                            backgroundColor: Styles.primaryColor3, // Màu nền
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4), // Bo góc
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                          child: const Icon(
+                            Icons.search,
+                            color: Colors.white,
+                          ),
+                        )
+                      ],
+                    ))
               ],
             ),
           ),

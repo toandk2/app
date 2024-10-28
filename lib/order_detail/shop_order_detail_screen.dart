@@ -49,12 +49,15 @@ class _ShopOrderDetailScreenState extends State<ShopOrderDetailScreen>
   TextEditingController txtChat = TextEditingController();
   List<BuyerMessages> dataChat = [];
   late final TabController _tabController;
+  late TextEditingController _shippingCost;
+  String? _oldShippingCost;
   int tabIndex = 0;
   Status? status;
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: tabTitles.length, vsync: this);
+    _shippingCost = TextEditingController();
     getShipper();
   }
 
@@ -64,6 +67,7 @@ class _ShopOrderDetailScreenState extends State<ShopOrderDetailScreen>
     // _focusNodes.dispose();
     txtChat.dispose();
     _tabController.dispose();
+    _shippingCost.dispose();
     super.dispose();
   }
 
@@ -108,6 +112,10 @@ class _ShopOrderDetailScreenState extends State<ShopOrderDetailScreen>
       _status = 2;
     } else {
       _status = 3;
+    }
+    if (order?.status == 0) {
+      _shippingCost.text = formatter.format(order?.shippingCost).trim();
+      _oldShippingCost = _shippingCost.text;
     }
     setState(() {});
     getChat();
@@ -399,7 +407,7 @@ class _ShopOrderDetailScreenState extends State<ShopOrderDetailScreen>
               children: [
                 TextSpan(
                   text:
-                      '${formatter.format(soLuongSanPham > 0 ? orderDetail.map<double>((m) => m.amount?.toDouble() ?? 0).reduce((a, b) => a + b) : 0)}đ',
+                      '${formatter.format(soLuongSanPham > 0 ? orderDetail.map<double>((m) => m.amount?.toDouble() ?? 0).reduce((a, b) => a + b) : 0)} đ',
                   style: Styles.headline5Style,
                 ),
               ],
@@ -414,17 +422,110 @@ class _ShopOrderDetailScreenState extends State<ShopOrderDetailScreen>
       allStates.add(Row(
         children: [
           const Expanded(child: Text('Phí giao hàng', style: Styles.textStyle)),
-          Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(
-                  text: '${formatter.format(order?.shippingCost)}đ',
-                  style: Styles.headline5Style,
+          order?.status == 0
+              ? SizedBox(
+                  width: 120,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Expanded(
+                          child: TextField(
+                        onSubmitted: (value) {
+                          if (value == _oldShippingCost) {
+                            return;
+                          }
+                          showDialog(
+                            context: context,
+                            builder: (_) {
+                              return DialogAction(
+                                  title: 'Xác nhận thay đổi phí vận chuyển?',
+                                  content:
+                                      'Bạn chắc chắn muốn sửa phí vận chuyển và thông báo tới người mua?',
+                                  text1: 'Xác nhận',
+                                  text2: 'Huỷ',
+                                  icon: SvgPicture.asset(
+                                    'assets/icons/profile/red-biking.svg',
+                                    width: 24,
+                                    height: 24,
+                                  ),
+                                  onTap2: () => {
+                                        _shippingCost.text = _oldShippingCost!,
+                                        Navigator.pop(context)
+                                      },
+                                  onTap1: () async {
+                                    Navigator.pop(context);
+                                    await EasyLoading.show(
+                                      status: 'Đang tải xử lý...',
+                                      maskType: EasyLoadingMaskType.clear,
+                                    );
+                                    var newShippingCost = _shippingCost.text
+                                        .replaceAll(",", "")
+                                        .trim();
+                                    Map<String, String> body = {
+                                      "order_id": order?.id ?? '',
+                                      "shipping_cost": newShippingCost,
+                                      "original_shipping_cost":
+                                          _oldShippingCost!.replaceAll(",", "")
+                                    };
+                                    try {
+                                      final rs = await _netUtil.post(
+                                          "change_ship_cost", body, context);
+                                      await EasyLoading.dismiss();
+                                      if (rs == null ||
+                                          rs["success"].toString() != "1") {
+                                        Fluttertoast.showToast(
+                                            msg:
+                                                "Có lỗi xảy ra, xin vui lòng thử lại.");
+                                        return;
+                                      }
+                                      Fluttertoast.showToast(
+                                          msg:
+                                              "Xác nhận cập nhật phí giao hàng thành công!");
+                                      int newShippingCostNumber =
+                                          int.parse(newShippingCost);
+                                      _shippingCost.text = formatter
+                                          .format(newShippingCostNumber);
+                                      _oldShippingCost = newShippingCost;
+                                      order!.shippingCost =
+                                          newShippingCostNumber;
+                                      order!.originalShippingCost =
+                                          newShippingCostNumber;
+                                      setState(() {});
+                                    } catch (e) {
+                                      await EasyLoading.dismiss();
+                                      Fluttertoast.showToast(
+                                          msg:
+                                              "Có lỗi xảy ra, xin vui lòng thử lại.");
+                                      return;
+                                    }
+                                  });
+                            },
+                          );
+                        },
+                        textAlign: TextAlign.right,
+                        style: Styles.headline5Style,
+                        controller: _shippingCost,
+                        decoration: const InputDecoration(
+                            contentPadding: EdgeInsets.zero,
+                            isDense: true,
+                            border: InputBorder.none),
+                      )),
+                      const Text('đ',
+                          style: TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.bold))
+                    ],
+                  ))
+              : Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: '${formatter.format(order?.shippingCost)} đ',
+                        style: Styles.headline5Style,
+                      ),
+                    ],
+                  ),
+                  textAlign: TextAlign.left,
                 ),
-              ],
-            ),
-            textAlign: TextAlign.left,
-          )
         ],
       ));
     }
@@ -439,7 +540,7 @@ class _ShopOrderDetailScreenState extends State<ShopOrderDetailScreen>
               children: [
                 TextSpan(
                   text:
-                      '${formatter.format((soLuongSanPham > 0 ? orderDetail.map<double>((m) => m.amount?.toDouble() ?? 0).reduce((a, b) => a + b) : 0) + (order?.shippingCost ?? 0))}đ',
+                      '${formatter.format((soLuongSanPham > 0 ? orderDetail.map<double>((m) => m.amount?.toDouble() ?? 0).reduce((a, b) => a + b) : 0) + (order?.shippingCost ?? 0))} đ',
                   style: Styles.headline5Style
                       .copyWith(color: const Color(0xFF278D47)),
                 ),
@@ -562,6 +663,9 @@ class _ShopOrderDetailScreenState extends State<ShopOrderDetailScreen>
         Expanded(
           child: GFButton(
             onPressed: () {
+              if(order?.originalShippingCost != null && order!.originalShippingCost! > 0){
+                return;
+              }
               showDialog(
                 context: context,
                 builder: (_) {
@@ -622,6 +726,7 @@ class _ShopOrderDetailScreenState extends State<ShopOrderDetailScreen>
               size: 24,
             ),
             text: 'Xác nhận đơn',
+            color: order?.originalShippingCost != null && order!.originalShippingCost! > 0 ? Colors.lightBlueAccent : Styles.primaryColor3,
             textStyle: Styles.textStyle.copyWith(color: Colors.white),
           ),
         ),
