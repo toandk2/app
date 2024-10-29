@@ -180,100 +180,121 @@ class _MyDrawerState extends State<MyDrawer> {
         ),
         child: Configs.user == null
             ? Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Gap(20),
-                  Row(
+                  Column(
                     children: [
-                      Expanded(
-                        child: InkWell(
-                          onTap: () {
-                            // if (Configs.userGroup == 1) {
-                            //   launchUrl(Uri.parse(
-                            //       'https://hokinhdoanh.online/login'));
-                            //   return;
-                            // }
-                            Navigator.of(context).pushAndRemoveUntil(
-                                MaterialPageRoute(
-                                  builder: (_) => const SearchScreen(),
-                                ),
-                                ModalRoute.withName('/home'));
-                          },
-                          child: Row(
-                            children: [
-                              FadeAnimation(
-                                delay: 0.8,
-                                child: SizedBox(
-                                  width: 36,
-                                  height: 36,
-                                  child: Image.asset(
-                                    "assets/images/logo.png",
+                      const Gap(20),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                // if (Configs.userGroup == 1) {
+                                //   launchUrl(Uri.parse(
+                                //       'https://hokinhdoanh.online/login'));
+                                //   return;
+                                // }
+                                Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                      builder: (_) => const SearchScreen(),
+                                    ),
+                                    ModalRoute.withName('/home'));
+                              },
+                              child: Row(
+                                children: [
+                                  FadeAnimation(
+                                    delay: 0.8,
+                                    child: SizedBox(
+                                      width: 36,
+                                      height: 36,
+                                      child: Image.asset(
+                                        "assets/images/logo.png",
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                  const Text(
+                                    // Configs.userGroup == 1
+                                    //     ? 'hokinhdoanh.\nonline'
+                                    //     :
+                                    'dothi\nthongminh1',
+                                    style: Styles.headline3Style,
+                                  ),
+                                ],
                               ),
-                              const Text(
-                                // Configs.userGroup == 1
-                                //     ? 'hokinhdoanh.\nonline'
-                                //     :
-                                'dothi\nthongminh1',
-                                style: Styles.headline3Style,
-                              ),
-                            ],
+                            ),
                           ),
+                          InkWell(
+                            onTap: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child:
+                                  Image.asset('assets/icons/drawer/close.png'),
+                            ),
+                          )
+                        ],
+                      ),
+                      const Gap(20),
+                      GFButton(
+                        onPressed: () {
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute<dynamic>(
+                                builder: (BuildContext context) =>
+                                    const RegisterScreen(),
+                              ),
+                              ModalRoute.withName('/home'));
+                        },
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        borderShape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        size: 48,
+                        fullWidthButton: true,
+                        child: Text(
+                          "Đăng ký",
+                          style: Styles.headline4Style
+                              .copyWith(color: Colors.white),
                         ),
                       ),
-                      InkWell(
-                        onTap: () {
-                          Navigator.of(context).pop();
+                      const Gap(12),
+                      GFButton(
+                        onPressed: () {
+                          Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(builder: (_) {
+                            return const LoginScreen();
+                          }), ModalRoute.withName('/home'));
                         },
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Image.asset('assets/icons/drawer/close.png'),
+                        padding: const EdgeInsets.all(16),
+                        borderShape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6),
                         ),
-                      )
+                        fullWidthButton: true,
+                        size: 48,
+                        // type: GFButtonType.outline,
+                        color: Colors.white,
+                        text: 'Đã có tài khoản? Đăng nhập',
+                        textColor: Styles.primaryColor3,
+                      ),
                     ],
                   ),
-                  const Gap(20),
-                  GFButton(
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute<dynamic>(
-                            builder: (BuildContext context) =>
-                                const RegisterScreen(),
-                          ),
-                          ModalRoute.withName('/home'));
-                    },
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
-                    borderShape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
+                  Container(
+                    width: double
+                        .infinity, // Đảm bảo container chiếm toàn bộ chiều rộng
+                    alignment: Alignment.bottomRight,
+                    child: InkWell(
+                      onTap: () {
+                        launchUrl(Uri.parse('https://dothithongminh1.vn/hdsd'));
+                        return;
+                      },
+                      child: const Text(
+                        'Hướng dẫn',
+                        style: TextStyle(color: Styles.primaryColor3),
+                      ),
                     ),
-                    size: 48,
-                    fullWidthButton: true,
-                    child: Text(
-                      "Đăng ký",
-                      style:
-                          Styles.headline4Style.copyWith(color: Colors.white),
-                    ),
-                  ),
-                  const Gap(12),
-                  GFButton(
-                    onPressed: () {
-                      Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (_) {
-                        return const LoginScreen();
-                      }), ModalRoute.withName('/home'));
-                    },
-                    padding: const EdgeInsets.all(16),
-                    borderShape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    fullWidthButton: true,
-                    size: 48,
-                    // type: GFButtonType.outline,
-                    color: Colors.white,
-                    text: 'Đã có tài khoản? Đăng nhập',
-                    textColor: Styles.primaryColor3,
                   ),
                 ],
               )
