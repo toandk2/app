@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:getwidget/colors/gf_color.dart';
 import 'package:getwidget/components/button/gf_button.dart';
+import 'package:hkd/order_detail/buyer_order_detail_screen.dart';
 import 'package:hkd/ultils/func.dart';
 import 'package:hkd/ultils/models.dart';
 import 'package:hkd/ultils/styles.dart';
@@ -102,15 +103,15 @@ class _ConfirmPayScreenState extends State<ConfirmPayScreen> {
                         style: Styles.textStyle),
                     const Gap(12),
                     InkWell(
-                      onTap: () async {
-                        final url = Uri.parse(
-                            'https://dothithongminh1.vn/muongi/order_buyer_detail?order_id=${widget.orderId}');
-
-                        // if (await canLaunchUrl(url)) {
-                        await launchUrl(url);
-                        // } else {
-                        //   Fluttertoast.showToast(msg: 'Could not launch $url');
-                        // }
+                      onTap: () {
+                        Configs.orderId = widget.orderId.toString();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute<dynamic>(
+                              builder: (BuildContext context) {
+                              return const BuyerOrderDetailScreen();
+                          }),
+                        );
                       },
                       child: Text(
                           'https://dothithongminh1.vn/muongi/order_buyer_detail?order_id=${widget.orderId}',

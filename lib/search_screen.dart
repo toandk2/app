@@ -125,9 +125,10 @@ class _SearchScreenState extends State<SearchScreen> {
     if (sellerMessage == null) return [];
     List<Suggestions> shops = [];
     final Map<String, String> body = {'kw': sellerMessage};
-    if (temporaryUserGroup == 1) {
-      body['type'] = '100';
-    }
+    // temporaryUserGroup biến này dùng để làm gì?
+    // if (temporaryUserGroup == 1) {
+    //   body['type'] = '100';
+    // }
     final value = await _networkUtil.get('quote', body, context);
     if (value != null) {
       shops = ShopSuggestion.fromJson(value).suggestions ?? [];
