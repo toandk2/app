@@ -457,7 +457,7 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
                           height: MediaQuery.of(context).size.width / 2,
                           child: Image.network(
                             Configs.BASE_URL.replaceAll('/api/', '') +
-                                (_shopDetail?.imgPath ?? ''),
+                                (_shopDetail?.imgBanner ?? ''),
                             errorBuilder: (context, error, stackTrace) {
                               return Container(
                                 color: Styles.darkGrey,
@@ -545,9 +545,10 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SvgPicture.asset(
-                                  'assets/icons/profile/bxs-map.svg',
+                                  'assets/icons/profile/bxs-map-blue.svg',
                                   width: 24,
                                   height: 24,
+                                  color: Styles.primaryColor3,
                                 ),
                                 const Gap(12),
                                 Expanded(
@@ -613,22 +614,22 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
                               visible: _isExtended,
                               child: Column(
                                 children: [
-                                  const Gap(8),
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Image.asset(
-                                          'assets/images/location-pin.png'),
-                                      const Gap(12),
-                                      Expanded(
-                                        child: Text(
-                                          _shopDetail?.website ?? '',
-                                          style: Styles.textStyle,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                  // const Gap(8),
+                                  // Row(
+                                  //   crossAxisAlignment:
+                                  //       CrossAxisAlignment.start,
+                                  //   children: [
+                                  //     Image.asset(
+                                  //         'assets/images/location-pin.png'),
+                                  //     const Gap(12),
+                                  //     Expanded(
+                                  //       child: Text(
+                                  //         _shopDetail?.website ?? '',
+                                  //         style: Styles.textStyle,
+                                  //       ),
+                                  //     ),
+                                  //   ],
+                                  // ),
                                   const Gap(8),
                                   Row(
                                     crossAxisAlignment:
