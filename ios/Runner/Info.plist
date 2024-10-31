@@ -64,9 +64,9 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Bật micro để quay phim, xác nhận.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Ứng dụng cần sử dụng thư viện hình ảnh để lưu trữ hình chụp khi thực hiện lắp đặt.</string>
+	<string>Ứng dụng cần sử dụng hình ảnh từ điện thoại để lưu trữ và hiển thị thông tin.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Ứng dụng cần sử dụng thư viện hình ảnh để lưu trữ hình chụp khi thực hiện lắp đặt.</string>
+	<string>Ứng dụng cần sử dụng hình ảnh từ điện thoại để lưu trữ và hiển thị thông tin.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>
