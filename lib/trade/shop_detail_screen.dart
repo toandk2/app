@@ -435,493 +435,521 @@ class _ShopDetailScreenState extends State<ShopDetailScreen> {
                 reverse: true,
                 animate: true,
               )
-            : Column(
-                children: [
-                  SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.width / 2,
-                      child: Image.network(
-                        Configs.BASE_URL.replaceAll('/api/', '') +
-                            (_shopDetail?.imgPath ?? ''),
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: Styles.darkGrey,
-                            width: MediaQuery.of(context).size.width,
-                            height: MediaQuery.of(context).size.width / 2,
-                          );
-                        },
-                      )),
-                  Container(
-                    color: Colors.white,
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(_shopDetail?.shopName ?? '',
-                            style: Styles.headline1Style),
-                        const Gap(12),
-                        Row(
+            : _shopDetail?.condistion != true
+                ? Column(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(top: 24),
+                        child: const Text(
+                          "Cửa hàng này chưa đáp ứng đủ điều kiện tham gia dothithongminh1.vn",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: Color.fromARGB(255, 255, 230, 0),
+                              fontSize: 24,
+                              fontWeight: FontWeight.w500))
+                      )
+                    ],
+                  )
+                : Column(
+                    children: [
+                      SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.width / 2,
+                          child: Image.network(
+                            Configs.BASE_URL.replaceAll('/api/', '') +
+                                (_shopDetail?.imgBanner ?? ''),
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: Styles.darkGrey,
+                                width: MediaQuery.of(context).size.width,
+                                height: MediaQuery.of(context).size.width / 2,
+                              );
+                            },
+                          )),
+                      Container(
+                        color: Colors.white,
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Expanded(
-                              child: GFButton(
-                                onPressed: () async {
-                                  final url = Uri.parse(
-                                      "tel://${_shopDetail?.shopPhone ?? ''}");
+                            Text(_shopDetail?.shopName ?? '',
+                                style: Styles.headline1Style),
+                            const Gap(12),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: GFButton(
+                                    onPressed: () async {
+                                      final url = Uri.parse(
+                                          "tel://${_shopDetail?.shopPhone ?? ''}");
 
-                                  if (await canLaunchUrl(url)) {
-                                    await launchUrl(url);
-                                  } else {
-                                    Fluttertoast.showToast(
-                                        msg: 'Could not launch $url');
-                                  }
-                                },
-                                size: 40,
-                                text: 'Liên hệ',
-                                icon: SvgPicture.asset(
-                                  'assets/icons/profile/bxs-phone.svg',
-                                  width: 24,
-                                  height: 24,
+                                      if (await canLaunchUrl(url)) {
+                                        await launchUrl(url);
+                                      } else {
+                                        Fluttertoast.showToast(
+                                            msg: 'Could not launch $url');
+                                      }
+                                    },
+                                    size: 40,
+                                    text: 'Liên hệ',
+                                    icon: SvgPicture.asset(
+                                      'assets/icons/profile/bxs-phone.svg',
+                                      width: 24,
+                                      height: 24,
+                                    ),
+                                    color: const Color(0xFFEBF2F8),
+                                    textStyle: Styles.headline4Style
+                                        .copyWith(color: Styles.primaryColor3),
+                                    borderShape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(6)),
+                                  ),
                                 ),
-                                color: const Color(0xFFEBF2F8),
-                                textStyle: Styles.headline4Style
-                                    .copyWith(color: Styles.primaryColor3),
-                                borderShape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(6)),
-                              ),
+                                const Gap(12),
+                                Expanded(
+                                  child: GFButton(
+                                    onPressed: () async {
+                                      // final url = Uri.parse("tel://${_shopDetail?.url??''}");
+
+                                      // if (await canLaunchUrl(url)) {
+                                      //   await launchUrl(url);
+                                      // } else {
+                                      //   Fluttertoast.showToast(msg: 'Could not launch $url');
+                                      // }
+                                      await Clipboard.setData(ClipboardData(
+                                          text:
+                                              'https://dothithongminh1.vn/${_shopDetail?.shopId ?? ''}'));
+                                      Fluttertoast.showToast(
+                                          msg:
+                                              "Sao chép đường dẫn cửa hàng thành công ");
+                                      // Share.share(_shopDetail?.url ?? '');
+                                    },
+                                    size: 40,
+                                    text: 'Chia sẻ',
+                                    icon: SvgPicture.asset(
+                                      'assets/icons/profile/bxs-share.svg',
+                                      width: 24,
+                                      height: 24,
+                                      color: Styles.primaryColor3,
+                                    ),
+                                    color: const Color(0xFFEBF2F8),
+                                    textStyle: Styles.headline4Style
+                                        .copyWith(color: Styles.primaryColor3),
+                                    borderShape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(6)),
+                                  ),
+                                ),
+                              ],
                             ),
                             const Gap(12),
-                            Expanded(
-                              child: GFButton(
-                                onPressed: () async {
-                                  // final url = Uri.parse("tel://${_shopDetail?.url??''}");
-
-                                  // if (await canLaunchUrl(url)) {
-                                  //   await launchUrl(url);
-                                  // } else {
-                                  //   Fluttertoast.showToast(msg: 'Could not launch $url');
-                                  // }
-                                  await Clipboard.setData(ClipboardData(
-                                      text:
-                                          'https://dothithongminh1.vn/${_shopDetail?.shopId ?? ''}'));
-                                  Fluttertoast.showToast(
-                                      msg:
-                                          "Sao chép đường dẫn cửa hàng thành công ");
-                                  // Share.share(_shopDetail?.url ?? '');
-                                },
-                                size: 40,
-                                text: 'Chia sẻ',
-                                icon: SvgPicture.asset(
-                                  'assets/icons/profile/bxs-share.svg',
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SvgPicture.asset(
+                                  'assets/icons/profile/bxs-map-blue.svg',
                                   width: 24,
                                   height: 24,
                                   color: Styles.primaryColor3,
                                 ),
-                                color: const Color(0xFFEBF2F8),
-                                textStyle: Styles.headline4Style
-                                    .copyWith(color: Styles.primaryColor3),
-                                borderShape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(6)),
-                              ),
+                                const Gap(12),
+                                Expanded(
+                                    child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      _shopDetail?.shopAddress ?? '',
+                                      style: Styles.textStyle,
+                                    ),
+                                    GFButton(
+                                      onPressed: () async {
+                                        final availableMaps =
+                                            await MapLauncher.installedMaps;
+                                        await availableMaps.firstOrNull
+                                            ?.showDirections(
+                                                destination: Coords(
+                                                    _shopDetail?.lat1
+                                                            ?.toDouble() ??
+                                                        0,
+                                                    _shopDetail?.lon1
+                                                            ?.toDouble() ??
+                                                        0));
+                                      },
+                                      text: 'Chỉ đường',
+                                      icon: SvgPicture.asset(
+                                        'assets/icons/send-plane-line.svg',
+                                        width: 24,
+                                        height: 24,
+                                        color: Styles.primaryColor3,
+                                      ),
+                                      textStyle: Styles.subtitle1Style.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                        color: Styles.primaryColor3,
+                                      ),
+                                      type: GFButtonType.transparent,
+                                      padding: const EdgeInsets.all(0),
+                                      // borderShape: RoundedRectangleBorder(
+                                      //     borderRadius: BorderRadius.circular(6)),
+                                    ),
+                                  ],
+                                ))
+                              ],
                             ),
-                          ],
-                        ),
-                        const Gap(12),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SvgPicture.asset(
-                              'assets/icons/profile/bxs-map.svg',
-                              width: 24,
-                              height: 24,
-                            ),
-                            const Gap(12),
-                            Expanded(
-                                child: Column(
+                            Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  _shopDetail?.shopAddress ?? '',
-                                  style: Styles.textStyle,
+                                SvgPicture.asset(
+                                  'assets/icons/profile/bxs-phone.svg',
+                                  width: 24,
+                                  height: 24,
                                 ),
-                                GFButton(
-                                  onPressed: () async {
-                                    final availableMaps =
-                                        await MapLauncher.installedMaps;
-                                    await availableMaps.firstOrNull
-                                        ?.showDirections(
-                                            destination: Coords(
-                                                _shopDetail?.lat1?.toDouble() ??
-                                                    0,
-                                                _shopDetail?.lon1?.toDouble() ??
-                                                    0));
-                                  },
-                                  text: 'Chỉ đường',
-                                  icon: SvgPicture.asset(
-                                    'assets/icons/send-plane-line.svg',
-                                    width: 24,
-                                    height: 24,
-                                    color: Styles.primaryColor3,
+                                const Gap(12),
+                                Expanded(
+                                  child: Text(
+                                    _shopDetail?.shopPhone ?? '',
+                                    style: Styles.textStyle,
                                   ),
-                                  textStyle: Styles.subtitle1Style.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: Styles.primaryColor3,
-                                  ),
-                                  type: GFButtonType.transparent,
-                                  padding: const EdgeInsets.all(0),
-                                  // borderShape: RoundedRectangleBorder(
-                                  //     borderRadius: BorderRadius.circular(6)),
                                 ),
                               ],
-                            ))
-                          ],
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SvgPicture.asset(
-                              'assets/icons/profile/bxs-phone.svg',
-                              width: 24,
-                              height: 24,
                             ),
-                            const Gap(12),
-                            Expanded(
-                              child: Text(
-                                _shopDetail?.shopPhone ?? '',
-                                style: Styles.textStyle,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Visibility(
-                          visible: _isExtended,
-                          child: Column(
-                            children: [
-                              const Gap(8),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                            Visibility(
+                              visible: _isExtended,
+                              child: Column(
                                 children: [
-                                  Image.asset('assets/images/location-pin.png'),
-                                  const Gap(12),
-                                  Expanded(
-                                    child: Text(
-                                      _shopDetail?.website ?? '',
-                                      style: Styles.textStyle,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const Gap(8),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  SvgPicture.asset(
-                                      'assets/icons/share-network.svg'),
-                                  const Gap(12),
-                                  Expanded(
-                                    child: Text(
-                                      _shopDetail?.facebook ?? '',
-                                      style: Styles.textStyle,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const Gap(8),
-                              if (_shopDetail?.type != null &&
-                                  ["11"].contains(_shopDetail!.shopType!))
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    (_shopDetail?.shop?.gpp != null)
-                                        ? Image.asset(
-                                            'assets/images/secure.png')
-                                        : Image.asset(
-                                            'assets/images/secure.png',
-                                            color: Styles.fieldTextColor,
-                                          ),
-                                    const Gap(12),
-                                    const Expanded(
-                                      child: Text(
-                                        'Có Giấy chứng nhận đủ điều kiện kinh doanh dược',
-                                        style: Styles.textStyle,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              if (_shopDetail?.type != null &&
-                                  ["31", "0", "30", "29", "33", "7"]
-                                      .contains(_shopDetail!.shopType!))
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    (_shopDetail?.shop?.gpp != null)
-                                        ? Image.asset(
-                                            'assets/images/secure.png')
-                                        : Image.asset(
-                                            'assets/images/secure.png',
-                                            color: Styles.fieldTextColor,
-                                          ),
-                                    const Gap(12),
-                                    const Expanded(
-                                      child: Text(
-                                        'Xem giấy chứng nhận VSATTP',
-                                        style: Styles.textStyle,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              const Gap(8),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  (_shopDetail?.shopEbillExist == 1)
-                                      ? Image.asset(
-                                          'assets/images/tick-hddt.png',
-                                        )
-                                      : Image.asset(
-                                          'assets/images/tick-hddt.png',
-                                          color: Styles.fieldTextColor,
+                                  // const Gap(8),
+                                  // Row(
+                                  //   crossAxisAlignment:
+                                  //       CrossAxisAlignment.start,
+                                  //   children: [
+                                  //     Image.asset(
+                                  //         'assets/images/location-pin.png'),
+                                  //     const Gap(12),
+                                  //     Expanded(
+                                  //       child: Text(
+                                  //         _shopDetail?.website ?? '',
+                                  //         style: Styles.textStyle,
+                                  //       ),
+                                  //     ),
+                                  //   ],
+                                  // ),
+                                  const Gap(8),
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      SvgPicture.asset(
+                                          'assets/icons/share-network.svg'),
+                                      const Gap(12),
+                                      Expanded(
+                                        child: Text(
+                                          _shopDetail?.facebook ?? '',
+                                          style: Styles.textStyle,
                                         ),
-                                  const Gap(12),
-                                  const Expanded(
-                                    child: Text(
-                                      'Có xuất hoá đơn điện tử',
-                                      style: Styles.textStyle,
+                                      ),
+                                    ],
+                                  ),
+                                  const Gap(8),
+                                  if (_shopDetail?.type != null &&
+                                      ["11"].contains(_shopDetail!.shopType!))
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        (_shopDetail?.shop?.gpp != null)
+                                            ? Image.asset(
+                                                'assets/images/secure.png')
+                                            : Image.asset(
+                                                'assets/images/secure.png',
+                                                color: Styles.fieldTextColor,
+                                              ),
+                                        const Gap(12),
+                                        const Expanded(
+                                          child: Text(
+                                            'Có Giấy chứng nhận đủ điều kiện kinh doanh dược',
+                                            style: Styles.textStyle,
+                                          ),
+                                        ),
+                                      ],
                                     ),
+                                  if (_shopDetail?.type != null &&
+                                      ["31", "0", "30", "29", "33", "7"]
+                                          .contains(_shopDetail!.shopType!))
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        (_shopDetail?.shop?.gpp != null)
+                                            ? Image.asset(
+                                                'assets/images/secure.png')
+                                            : Image.asset(
+                                                'assets/images/secure.png',
+                                                color: Styles.fieldTextColor,
+                                              ),
+                                        const Gap(12),
+                                        const Expanded(
+                                          child: Text(
+                                            'Xem giấy chứng nhận VSATTP',
+                                            style: Styles.textStyle,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  const Gap(8),
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      (_shopDetail?.shopEbillExist == 1)
+                                          ? Image.asset(
+                                              'assets/images/tick-hddt.png',
+                                            )
+                                          : Image.asset(
+                                              'assets/images/tick-hddt.png',
+                                              color: Styles.fieldTextColor,
+                                            ),
+                                      const Gap(12),
+                                      const Expanded(
+                                        child: Text(
+                                          'Có xuất hoá đơn điện tử',
+                                          style: Styles.textStyle,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
+                            ),
+                            _isExtended
+                                ? GFButton(
+                                    onPressed: () {
+                                      _changedExtend(false);
+                                    },
+                                    icon: const Icon(
+                                        Icons.keyboard_arrow_up_rounded),
+                                    text: 'Thu gọn',
+                                    fullWidthButton: true,
+                                    type: GFButtonType.transparent,
+                                    textStyle: Styles.textStyle
+                                        .copyWith(color: Styles.primaryColor3),
+                                    position: GFPosition.end,
+                                  )
+                                : GFButton(
+                                    onPressed: () {
+                                      _changedExtend(true);
+                                    },
+                                    type: GFButtonType.transparent,
+                                    fullWidthButton: true,
+                                    icon: const Icon(
+                                        Icons.keyboard_arrow_down_rounded),
+                                    text: 'Xem thêm thông tin',
+                                    textStyle: Styles.textStyle
+                                        .copyWith(color: Styles.primaryColor3),
+                                    position: GFPosition.end,
+                                  )
+                          ],
+                        ),
+                      ),
+                      if (_initProducts.isEmpty)
+                        SvgPicture.asset(
+                          'assets/icons/bx-box.svg',
+                          width: 120,
+                          height: 120,
+                        ),
+                      if (_initProducts.isEmpty)
+                        const Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 60.0, vertical: 24),
+                          child: Text(
+                              'Hộ kinh doanh này hiện tại chưa có sản phẩm nào.',
+                              textAlign: TextAlign.center,
+                              style: Styles.hintStyle),
+                        ),
+                      if (_initProducts.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: CustomSearchBar<Products>(
+                            prefixIcon: const Icon(
+                              Icons.search,
+                              color: Styles.fieldTextColor,
+                            ),
+                            suffixIcon: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _showGroups = !_showGroups;
+                                });
+                              },
+                              child: const Icon(
+                                Icons.menu,
+                                color: Styles.fieldTextColor,
+                              ),
+                            ),
+                            readOnly: false,
+                            showDialog: false,
+                            onChanged: _onSearch,
+                            text: (text) {
+                              return text.productName ?? '';
+                            },
+                            onSelected: (value) {},
+                            timeOutSearch: 0,
+                          ),
+                        ),
+                      if (_showGroups &&
+                          _shopDetail?.productGroups != null &&
+                          _shopDetail?.productGroups?.isNotEmpty == true)
+                        SizedBox(
+                          height: 54,
+                          child: ListView(
+                            scrollDirection: Axis.horizontal,
+                            shrinkWrap: true,
+                            children: [
+                              _GroupProductWidget(
+                                group: 'Tất cả',
+                                picked: groupPickedIndex == 0,
+                                onTap: () {
+                                  _slicedproduct = _initProducts.slices(10);
+
+                                  groupPickedIndex = 0;
+                                  _pageController.currentPage = 0;
+                                  _updatePage();
+                                },
+                              ),
+                              ...List.generate(
+                                  _shopDetail?.productGroups?.length ?? 0,
+                                  (index) {
+                                final group =
+                                    _shopDetail?.productGroups?[index];
+                                if (group == null) return const SizedBox();
+                                return _GroupProductWidget(
+                                  group: group.name ?? '',
+                                  picked: groupPickedIndex == index + 1,
+                                  onTap: () {
+                                    if (group.name == 'Sản phẩm dịch vụ bán') {
+                                      _slicedproduct = _initProducts.slices(10);
+                                    } else {
+                                      _slicedproduct = _shopDetail
+                                              ?.groups?[group.id]
+                                              ?.slices(10) ??
+                                          [];
+                                    }
+                                    groupPickedIndex = index + 1;
+                                    _pageController.currentPage = 0;
+                                    _updatePage();
+                                  },
+                                );
+                              })
                             ],
                           ),
                         ),
-                        _isExtended
-                            ? GFButton(
-                                onPressed: () {
-                                  _changedExtend(false);
+                      // ListView.builder(
+                      //   itemCount: _shopDetail?.productGroups?.length??0,
+                      //   itemBuilder: (context, index) {
+
+                      // }),
+                      if (_initProducts.isNotEmpty)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            const Gap(12),
+                            const Text(
+                              'Kiểu xem: ',
+                              style: Styles.subtitle1Style,
+                            ),
+                            const Gap(6),
+                            GFButton(
+                              onPressed: () {
+                                _changedView(false);
+                              },
+                              type: GFButtonType.solid,
+                              color: _isGridView
+                                  ? Colors.white
+                                  : const Color(0xFFEAEAEA),
+                              icon: const Icon(Icons.list_rounded),
+                              text: 'Danh sách',
+                              textStyle: Styles.subtitle1Style,
+                            ),
+                            const Gap(6),
+                            GFButton(
+                              onPressed: () {
+                                _changedView(true);
+                              },
+                              type: GFButtonType.solid,
+                              color: _isGridView
+                                  ? const Color(0xFFEAEAEA)
+                                  : Colors.white,
+                              icon: const Icon(Icons.grid_view),
+                              text: 'Lưới',
+                              textStyle: Styles.subtitle1Style,
+                            ),
+                            const Gap(12),
+                          ],
+                        ),
+                      if (_initProducts.isNotEmpty && _products.isEmpty)
+                        SvgPicture.asset(
+                          'assets/icons/bx-search.svg',
+                          width: 120,
+                          height: 120,
+                        ),
+                      if (_initProducts.isNotEmpty && _products.isEmpty)
+                        const Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 60.0, vertical: 24),
+                          child: Text('Không có kết quả tìm kiếm phù hợp.',
+                              textAlign: TextAlign.center,
+                              style: Styles.hintStyle),
+                        ),
+
+                      if (_shopDetail != null &&
+                          _products.isNotEmpty == true &&
+                          !_isGridView)
+                        ...List.generate(
+                            _products.length,
+                            (index) => InkWell(
+                                onTap: () {
+                                  _addItembyIndex(index);
                                 },
-                                icon:
-                                    const Icon(Icons.keyboard_arrow_up_rounded),
-                                text: 'Thu gọn',
-                                fullWidthButton: true,
-                                type: GFButtonType.transparent,
-                                textStyle: Styles.textStyle
-                                    .copyWith(color: Styles.primaryColor3),
-                                position: GFPosition.end,
-                              )
-                            : GFButton(
-                                onPressed: () {
-                                  _changedExtend(true);
-                                },
-                                type: GFButtonType.transparent,
-                                fullWidthButton: true,
-                                icon: const Icon(
-                                    Icons.keyboard_arrow_down_rounded),
-                                text: 'Xem thêm thông tin',
-                                textStyle: Styles.textStyle
-                                    .copyWith(color: Styles.primaryColor3),
-                                position: GFPosition.end,
-                              )
-                      ],
-                    ),
+                                child: _ItemWidget(product: _products[index]))),
+                      if (_shopDetail != null &&
+                          _products.isNotEmpty == true &&
+                          _isGridView)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                          child: GridView.builder(
+                              physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                      mainAxisSpacing: 12,
+                                      crossAxisSpacing: 12,
+                                      crossAxisCount: 2,
+                                      childAspectRatio: 0.64),
+                              itemCount: _products.length,
+                              itemBuilder: (context, index) {
+                                return InkWell(
+                                  onTap: () {
+                                    _addItembyIndex(index);
+                                  },
+                                  child: _ItemGridWidget(
+                                      product: _products[index]),
+                                );
+                              }),
+                        ),
+                      const Gap(12),
+                      if (_pageCount > 0)
+                        NumberPaginator(
+                          numberPages: _pageCount,
+                          controller: _pageController,
+                          onPageChange: (int index) {
+                            _updatePage();
+                          },
+                        ),
+                      _CheckoutWidget(
+                        model: _checkoutModel,
+                        key: Key(_checkoutModel.data.toString()),
+                        addItem: _addItem,
+                        removeItem: _removeItem,
+                        shippingCost: _shippingCost,
+                        productCost: _totalProductCost,
+                      )
+                    ],
                   ),
-                  if (_initProducts.isEmpty)
-                    SvgPicture.asset(
-                      'assets/icons/bx-box.svg',
-                      width: 120,
-                      height: 120,
-                    ),
-                  if (_initProducts.isEmpty)
-                    const Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 60.0, vertical: 24),
-                      child: Text(
-                          'Hộ kinh doanh này hiện tại chưa có sản phẩm nào.',
-                          textAlign: TextAlign.center,
-                          style: Styles.hintStyle),
-                    ),
-                  if (_initProducts.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: CustomSearchBar<Products>(
-                        prefixIcon: const Icon(
-                          Icons.search,
-                          color: Styles.fieldTextColor,
-                        ),
-                        suffixIcon: InkWell(
-                          onTap: () {
-                            setState(() {
-                              _showGroups = !_showGroups;
-                            });
-                          },
-                          child: const Icon(
-                            Icons.menu,
-                            color: Styles.fieldTextColor,
-                          ),
-                        ),
-                        readOnly: false,
-                        showDialog: false,
-                        onChanged: _onSearch,
-                        text: (text) {
-                          return text.productName ?? '';
-                        },
-                        onSelected: (value) {},
-                        timeOutSearch: 0,
-                      ),
-                    ),
-                  if (_showGroups &&
-                      _shopDetail?.productGroups != null &&
-                      _shopDetail?.productGroups?.isNotEmpty == true)
-                    SizedBox(
-                      height: 54,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        shrinkWrap: true,
-                        children: [
-                          _GroupProductWidget(
-                            group: 'Tất cả',
-                            picked: groupPickedIndex == 0,
-                            onTap: () {
-                              _slicedproduct = _initProducts.slices(10);
-
-                              groupPickedIndex = 0;
-                              _pageController.currentPage = 0;
-                              _updatePage();
-                            },
-                          ),
-                          ...List.generate(
-                              _shopDetail?.productGroups?.length ?? 0, (index) {
-                            final group = _shopDetail?.productGroups?[index];
-                            if (group == null) return const SizedBox();
-                            return _GroupProductWidget(
-                              group: group.name ?? '',
-                              picked: groupPickedIndex == index + 1,
-                              onTap: () {
-                                if (group.name == 'Sản phẩm dịch vụ bán') {
-                                  _slicedproduct = _initProducts.slices(10);
-                                } else {
-                                  _slicedproduct = _shopDetail
-                                          ?.groups?[group.id]
-                                          ?.slices(10) ??
-                                      [];
-                                }
-                                groupPickedIndex = index + 1;
-                                _pageController.currentPage = 0;
-                                _updatePage();
-                              },
-                            );
-                          })
-                        ],
-                      ),
-                    ),
-                  // ListView.builder(
-                  //   itemCount: _shopDetail?.productGroups?.length??0,
-                  //   itemBuilder: (context, index) {
-
-                  // }),
-                  if (_initProducts.isNotEmpty)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        const Gap(12),
-                        const Text(
-                          'Kiểu xem: ',
-                          style: Styles.subtitle1Style,
-                        ),
-                        const Gap(6),
-                        GFButton(
-                          onPressed: () {
-                            _changedView(false);
-                          },
-                          type: GFButtonType.solid,
-                          color: _isGridView
-                              ? Colors.white
-                              : const Color(0xFFEAEAEA),
-                          icon: const Icon(Icons.list_rounded),
-                          text: 'Danh sách',
-                          textStyle: Styles.subtitle1Style,
-                        ),
-                        const Gap(6),
-                        GFButton(
-                          onPressed: () {
-                            _changedView(true);
-                          },
-                          type: GFButtonType.solid,
-                          color: _isGridView
-                              ? const Color(0xFFEAEAEA)
-                              : Colors.white,
-                          icon: const Icon(Icons.grid_view),
-                          text: 'Lưới',
-                          textStyle: Styles.subtitle1Style,
-                        ),
-                        const Gap(12),
-                      ],
-                    ),
-                  if (_initProducts.isNotEmpty && _products.isEmpty)
-                    SvgPicture.asset(
-                      'assets/icons/bx-search.svg',
-                      width: 120,
-                      height: 120,
-                    ),
-                  if (_initProducts.isNotEmpty && _products.isEmpty)
-                    const Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 60.0, vertical: 24),
-                      child: Text('Không có kết quả tìm kiếm phù hợp.',
-                          textAlign: TextAlign.center, style: Styles.hintStyle),
-                    ),
-
-                  if (_shopDetail != null &&
-                      _products.isNotEmpty == true &&
-                      !_isGridView)
-                    ...List.generate(
-                        _products.length,
-                        (index) => InkWell(
-                            onTap: () {
-                              _addItembyIndex(index);
-                            },
-                            child: _ItemWidget(product: _products[index]))),
-                  if (_shopDetail != null &&
-                      _products.isNotEmpty == true &&
-                      _isGridView)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                      child: GridView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                  mainAxisSpacing: 12,
-                                  crossAxisSpacing: 12,
-                                  crossAxisCount: 2,
-                                  childAspectRatio: 0.64),
-                          itemCount: _products.length,
-                          itemBuilder: (context, index) {
-                            return InkWell(
-                              onTap: () {
-                                _addItembyIndex(index);
-                              },
-                              child: _ItemGridWidget(product: _products[index]),
-                            );
-                          }),
-                    ),
-                  const Gap(12),
-                  if (_pageCount > 0)
-                    NumberPaginator(
-                      numberPages: _pageCount,
-                      controller: _pageController,
-                      onPageChange: (int index) {
-                        _updatePage();
-                      },
-                    ),
-                  _CheckoutWidget(
-                    model: _checkoutModel,
-                    key: Key(_checkoutModel.data.toString()),
-                    addItem: _addItem,
-                    removeItem: _removeItem,
-                    shippingCost: _shippingCost,
-                    productCost: _totalProductCost,
-                  )
-                ],
-              ),
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16),

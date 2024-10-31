@@ -1844,6 +1844,7 @@ class ShopDetail {
   String? bankAccountName;
   String? bankAccountNumber;
   String? imgPath;
+  String? imgBanner;
   num? lat1;
   num? lon1;
   String? url;
@@ -1872,6 +1873,7 @@ class ShopDetail {
       this.bankAccountName,
       this.bankAccountNumber,
       this.imgPath,
+      this.imgBanner,
       this.lat1,
       this.lon1,
       this.url,
@@ -1923,6 +1925,7 @@ class ShopDetail {
     bankAccountName = json['bank_account_name'];
     bankAccountNumber = json['bank_account_number'];
     imgPath = json['img_path'];
+    imgBanner = json['img_banner'];
     lat1 = json['lat1'];
     lon1 = json['lon1'];
     url = json['url'];
